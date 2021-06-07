@@ -1,3 +1,9 @@
+# not my data
+examples/data/GBP_USD\ Historical\ Data_monthly.csv
+
+# pycharm
+.idea/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

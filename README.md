@@ -1,2 +1,3 @@
 # timeseries
-Library for generation, transformation and visualization of multivariate time series
+A package for generation, transformation and visualization of multivariate 
+time series
