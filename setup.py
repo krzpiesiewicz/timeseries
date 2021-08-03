@@ -13,7 +13,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/krzpiesiewicz/timeseries",
-    packages=setuptools.find_packages(exclude=['tests']),
+    packages=setuptools.find_packages(exclude=['tests', 'examples']),
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
@@ -21,10 +21,11 @@ setuptools.setup(
     ],
     install_requires=[
         "pandas>=1.0.5",
-        "numpy>=1.18.5",
+        "numpy~=1.19.0",
         "matplotlib>=3.2.2",
         "IPython>=5.5.0",
         "plotly>=4.5.0",
+        "pmdarima>=1.8.2",
     ],
     test_requirements=["pytest>=6.2.0"],
     python_requires='>=3.6',
