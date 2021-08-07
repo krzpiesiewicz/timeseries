@@ -1,5 +1,6 @@
 import os
 import sys
+import numpy as np
 
 
 def sorted_scores(scores):
@@ -22,7 +23,7 @@ def grid_search_hyper_params(
     fails = 0
     if scores is None:
         scores = []
-    max_score = 0
+    best_score = np.inf
     best_valuation = None
     n = len(grid)
     print(f"0/{n}", end="")
@@ -37,19 +38,17 @@ def grid_search_hyper_params(
             model.fit(ts, train_index, **fit_params)
             score = model.score(ts, val_index, **score_params)
         except:
-            score = -1
+            score = np.inf
             fails += 1
         finally:
             sys.stderr.close()
             sys.stderr = old_stderr
         scores.append((score, hyper_params_values))
-        if score > max_score:
-            max_score = score
+        if score < best_score:
+            best_score = score
             best_valuation = hyper_params_values
-        print(
-            f"\r{i + 1}/{n}, max_score: {max_score}, valuation: {best_valuation}",
-            end="",
-        )
+        print(f"\r{i + 1}/{n}, best_score: {best_score}, valuation: "
+              f"{best_valuation}", end="",)
     print("")
     scores = sorted_scores(scores)
     if best is None:

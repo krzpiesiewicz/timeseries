@@ -65,28 +65,33 @@ class Interval:
         self.begin = begin
         self.end = end
 
-    def __view__(self, ts=None, begin=None, end=None, prevs=0):
+    def index(self, ts=None, begin=None, end=None, prevs=0, nexts=0):
         if ts is None:
             ts = self.ts
+        if begin is None:
+            begin = self.begin
+        if end is None:
+            end = self.end
         assert prevs >= 0
+        index = ts.index
         if begin is not None:
             index = ts[begin:].index
             if prevs > 0:
-                t = ts[:begin]
-                index = ts[:begin].index[-prevs - 1: -1].append(index)
-            ts = ts[index]
+                index = ts[:begin].index[-prevs:].append(index)
         if end is not None:
-            ts = ts[:end]
-        if end is not None and len(ts[end:]) == 1:
-            ts = ts.iloc[:-1]
+            index = index.intersection(ts[:end].index)
+            if nexts > 0:
+                index = index.append(ts[end:].index[:nexts])
+        return index
+
+    def view(self, ts=None, begin=None, end=None, prevs=0, nexts=0):
+        if ts is None:
+            ts = self.ts
+        index = self.index(ts, begin, end, prevs, nexts)
+        ts = ts[index]
         return ts
 
     def prev_view(self, ts=None):
         if ts is None:
             ts = self.ts
-        return self.__view__(ts, end=self.begin)
-
-    def view(self, ts=None, prevs=0):
-        if ts is None:
-            ts = self.ts
-        return self.__view__(ts, begin=self.begin, end=self.end, prevs=prevs)
+        return self.view(ts, begin=None, end=self.begin)
