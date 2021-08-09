@@ -65,14 +65,11 @@ class Interval:
         self.begin = begin
         self.end = end
 
-    def index(self, ts=None, begin=None, end=None, prevs=0, nexts=0):
+    def __index__(self, ts=None, begin=None, end=None, prevs=0, nexts=0):
         if ts is None:
             ts = self.ts
-        if begin is None:
-            begin = self.begin
-        if end is None:
-            end = self.end
         assert prevs >= 0
+        assert nexts >= 0
         index = ts.index
         if begin is not None:
             index = ts[begin:].index
@@ -84,6 +81,13 @@ class Interval:
                 index = index.append(ts[end:].index[:nexts])
         return index
 
+    def index(self, ts=None, begin=None, end=None, prevs=0, nexts=0):
+        if begin is None:
+            begin = self.begin
+        if end is None:
+            end = self.end
+        return self.__index__(ts, begin, end, prevs, nexts)
+
     def view(self, ts=None, begin=None, end=None, prevs=0, nexts=0):
         if ts is None:
             ts = self.ts
@@ -94,4 +98,6 @@ class Interval:
     def prev_view(self, ts=None):
         if ts is None:
             ts = self.ts
-        return self.view(ts, begin=None, end=self.begin)
+        index = self.__index__(ts, end=self.begin)
+        ts = ts[index]
+        return ts

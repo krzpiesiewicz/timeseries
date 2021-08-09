@@ -28,7 +28,7 @@ def grid_search_hyper_params(
     n = len(grid)
     print(f"0/{n}", end="")
     for i, hyper_params_values in enumerate(grid):
-        if fails > max_fails:
+        if max_fails is not None and fails > max_fails:
             print(f"\nTerminating: more than {max_fails} fails")
             break
         try:
