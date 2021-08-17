@@ -88,6 +88,8 @@ def main():
     fig2.show()
 
     # Evil Example
+    # import numpy as np
+    # from timeseries import ts_from_fun
     # fun = lambda x: np.exp(x / 200 + np.power(np.sin(x/50), 2))
     # ts = pd.Series(ts_from_fun(1400, fun, start=-200),
     #                index=np.arange(-200, 1200))
