@@ -1,6 +1,5 @@
 # not my data
-examples/data/GBP_USD\ Historical\ Data_monthly.csv
-examples/data/GBP_USD\ Historical\ Data_daily.csv
+examples/data/
 
 # pycharm
 .idea/

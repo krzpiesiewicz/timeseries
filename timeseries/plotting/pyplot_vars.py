@@ -21,7 +21,10 @@ def pyplot_vars(
         width=None,
         height=None,
         fontsize=13.5,
+        xaxis_title=False,
+        yaxis_title=False,
         ynbins=10,
+        xscale="linear",
         yscale="linear",
         calc_xticks=True,
         major_xstep=None,
@@ -38,10 +41,14 @@ def pyplot_vars(
 ):
     plt.ioff()
     if "pandas.core." in f"{type(index)}":
+        if xaxis_title == True:
+            xaxis_title = index.name
         index = index.values
     if index_values is None:
         index_values = index
     if "pandas.core." in f"{type(index_values)}":
+        if xaxis_title == True:
+            xaxis_title = index.name
         index_values = index_values.values
     is_datetime_x = False
     if "datetime" in f"{index_values.dtype}":
@@ -114,8 +121,16 @@ def pyplot_vars(
         plot_single(ax, ts)
 
     for ax in axs:
+        if not is_datetime_x:
+            ax.set_xscale(xscale)
+        if type(xaxis_title) is str:
+            ax.set_xlabel(xaxis_title)
         ax.yaxis.set_major_locator(ticker.MaxNLocator(nbins=ynbins))
         ax.set_yscale(yscale)
+
+    if yaxis_title == True:
+        for ax, var_name in zip(axs, vars_names):
+            ax.set_ylabel(var_name)
 
     if calc_xticks:
 

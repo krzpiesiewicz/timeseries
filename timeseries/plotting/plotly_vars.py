@@ -26,6 +26,8 @@ def plotly_vars(
         yscale=None,
         yticks=None,
         xticks=None,
+        xaxis_title=False,
+        yaxis_title=False,
         title=None,
         fontsize=14,
         line_width=1.5,
@@ -112,6 +114,16 @@ def plotly_vars(
         fig.update_xaxes(nticks=xticks)
         fig.update_yaxes(showgrid=True)
         fig.update_xaxes(showgrid=True)
+
+        if xaxis_title == True:
+            xaxis_title = index.name
+        if type(xaxis_title) is str:
+            fig.update_layout(xaxis_title=xaxis_title)
+
+        if yaxis_title == True:
+            yaxis_title = name
+        if type(yaxis_title) is str:
+            fig.update_layout(yaxis_title=yaxis_title)
 
         width = int(width * 0.9)
         height = int(height * 0.9)

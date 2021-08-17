@@ -11,15 +11,28 @@ def grid_search_hyper_params(
         create_model,
         grid,
         ts,
-        train_index,
-        val_index,
+        train_intv,
+        val_intv,
         best=10,
         max_fails=20,
         scores=None,
         model_params={},
+        fit_fun=None,
         fit_params={},
+        score_fun=None,
         score_params={},
 ):
+    def default_fit_fun(model, ts, train_intv, **fit_params):
+        model.fit(ts, train_intv, **fit_params)
+
+    def default_score_fun(model, ts, val_intv, **fit_params):
+        return model.score(ts, val_intv, **fit_params)
+
+    if fit_fun is None:
+        fit_fun = default_fit_fun
+    if score_fun is None:
+        score_fun = default_score_fun
+
     fails = 0
     if scores is None:
         scores = []
@@ -35,8 +48,8 @@ def grid_search_hyper_params(
             old_stderr = sys.stderr
             sys.stderr = open(os.devnull, "w")
             model = create_model(**hyper_params_values, **model_params)
-            model.fit(ts, train_index, **fit_params)
-            score = model.score(ts, val_index, **score_params)
+            fit_fun(model, ts, train_intv, **fit_params)
+            score = score_fun(model, ts, val_intv, **score_params)
         except:
             score = np.inf
             fails += 1
@@ -48,7 +61,7 @@ def grid_search_hyper_params(
             best_score = score
             best_valuation = hyper_params_values
         print(f"\r{i + 1}/{n}, best_score: {best_score}, valuation: "
-              f"{best_valuation}", end="",)
+              f"{best_valuation}   ", end="",)
     print("")
     scores = sorted_scores(scores)
     if best is None:
