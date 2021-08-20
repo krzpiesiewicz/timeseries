@@ -10,20 +10,20 @@ class Interval:
         if ts is None:
             ts = self.ts
         index = ts.index
-        if begin is not None:
+        if begin is not None and begin >= ts.index[0]:
             index = ts.loc[begin:].index
             if prevs > 0:
                 index = ts.loc[:begin].index[-prevs - 1:-1].append(index)
-            if prevs < 0:
-                index = index[-prevs:]
-        if end is not None:
+        if prevs < 0:
+            index = index[-prevs:]
+        if end is not None and end <= ts.index[-1]:
             index = index.intersection(ts.loc[:end].index)
             if index[-1] == end:
                 index = index[:-1]
             if nexts > 0:
                 index = index.append(ts.loc[end:].index[:nexts])
-            if nexts < 0:
-                index = index[:nexts]
+        if nexts < 0:
+            index = index[:nexts]
         return index
 
     def index(self, ts=None, begin=None, end=None, prevs=0, nexts=0):
