@@ -51,14 +51,29 @@ def pyplot_hist(
     return fig
 
 
-def plotly_hist(values, title=None, name=None, fig=None, **kwargs):
+def plotly_hist(values, title=None, name=None, fig=None, width=None,
+                height=None, fontsize=14, **kwargs):
     if type(values) is pd.Series:
         if name is None:
             name = values.name
         values = values.values
     if fig is None:
         fig = make_subplots(rows=1, cols=1)
-        fig.update_layout(title=title)
+        if width is None:
+            width = 1030
+        if height is None:
+            height = 700
+        width = int(width * 0.9)
+        height = int(height * 0.9)
+        fig.update_layout(
+            width=width,
+            height=height,
+            font_size=fontsize,
+            title=title,
+            title_x=0.5,
+            title_yanchor="top",
+            template="simple_white",
+        )
     hist = px.histogram(values, **kwargs)
     fig.add_trace(
         go.Histogram(x=hist.data[0].x,

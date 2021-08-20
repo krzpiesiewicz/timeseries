@@ -60,7 +60,7 @@ def main():
     ts = covid_data[covid_data.location == loc]["new_cases"]
     ts = ts[~ts.isnull()]
 
-    plot_ts(ts, title=f"Covid-19 {loc}").show()
+    plot_ts(ts, title=f"Covid-19 {loc}", engine="plotly").show()
 
     train_intv = Interval(ts, begin=datetime(2020, 3, 5),
                           end=datetime(2021, 3, 1))
@@ -68,13 +68,15 @@ def main():
     trans = IHSTransformer(ts, interval=train_intv)
     trans_ts = trans.transform(ts)
 
-    fig1 = plot_ts(trans_ts,
+    fig1 = plot_ts(trans_ts, engine="plotly",
                    title=f"Covid-19 New Cases in {loc} – Transformed")
     plot_ts(train_intv.view(trans_ts), color="red", fig=fig1)
     fig1.show()
 
     figh = plot_hist(train_intv.view(trans_ts), name="Train Interval",
-                     title="Covid-19 New Cases in {loc} – Histogram of Transformed")
+                     title=f"Covid-19 New Cases in {loc} – Histogram of "
+                           "Transformed",
+                     engine="plotly")
     plot_hist(whole_intv.view(trans_ts), fig=figh,
               name="Whole Interval")
     figh.show()
@@ -82,7 +84,7 @@ def main():
     detrans_ts = trans.detransform(train_intv.view(trans_ts),
                                    train_intv.prev_view())
 
-    fig2 = plot_ts(ts, title=f"Covid-19 {loc}")
+    fig2 = plot_ts(ts, title=f"Covid-19 {loc}", engine="plotly")
     plot_ts(train_intv.view(ts), color="yellow", fig=fig2)
     plot_ts(detrans_ts, color="red", name="Detransformed Train", fig=fig2)
     fig2.show()
