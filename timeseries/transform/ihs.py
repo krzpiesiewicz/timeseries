@@ -7,15 +7,6 @@ from timeseries.transform.transformer import Transformer
 
 
 class IHSTransformer(Transformer):
-    def __get_ts_and_interval__(self, ts, interval):
-        if type(ts) is Interval:
-            if interval is None:
-                interval = ts
-            ts = interval.ts
-        if self.d is not None and interval is None:
-            interval = Interval(ts, begin=ts.index[self.d])
-        return ts, interval
-
     def __init__(self, ts, interval=None, d=None, lmb="auto",
                  save_loglikelihood_deriv=False):
         self.d = d
@@ -57,7 +48,7 @@ class IHSTransformer(Transformer):
             x = np.arcsinh(x * self.lmb) / self.lmb
         if self.mean is None:
             self.mean = np.mean(x)
-        x -= self.mean
+        x = x - self.mean
         if self.std is None:
             self.std = np.sqrt(np.var(x))
             if self.std == 0:
