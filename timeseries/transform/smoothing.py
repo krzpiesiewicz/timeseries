@@ -3,7 +3,7 @@ import pandas as pd
 from scipy.stats import norm
 
 
-def get_smoothed(ts, std=None, weights=None):
+def get_smoothed(ts, std=None, weights=None, only_prevs=False):
     if weights is not None:
         assert std is None
     else:
@@ -20,7 +20,10 @@ def get_smoothed(ts, std=None, weights=None):
     y[-m:] = x[-1]
     y[m:-m] = x
     s = np.zeros_like(x)
+    if only_prevs:
+        weights[m + 1 :] = 0
     weights = weights / np.sum(weights)
     for i, w in enumerate(weights):
-        s += w * y[i : n + i]
+        if w != 0:
+            s += w * y[i : n + i]
     return pd.Series(s, index=ts.index)
