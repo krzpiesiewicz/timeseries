@@ -3,7 +3,7 @@ from datetime import datetime
 import pandas as pd
 
 from timeseries import Interval
-from timeseries.plotting import plot_ts, plot_hist
+from timeseries.plotting import plot_ts, plot_hist, plot_acf, plot_pacf
 from timeseries.transform.ihs import IHSTransformer
 
 
@@ -24,7 +24,7 @@ def main():
 
     plot_ts(whole_intv.view(), title="GBP/USD Daily").show()
 
-    trans = IHSTransformer(ts, interval=train_intv,
+    trans = IHSTransformer(ts, interval=train_intv, verbose=True,
                            save_loglikelihood_deriv=True)
     plot_ts(trans.loglikelihood_deriv, title="GBP/USD Daily").show()
 
@@ -33,6 +33,9 @@ def main():
                    title="GBP/USD Daily – Transformed")
     plot_ts(train_intv.view(trans_ts), color="red", name="Train", fig=fig1)
     fig1.show()
+
+    plot_acf(trans_ts).show()
+    plot_pacf(trans_ts).show()
 
     figh = plot_hist(train_intv.view(trans_ts), name="Train Interval",
                      title="GBP/USD Daily – Histogram of Transformed")
@@ -67,6 +70,7 @@ def main():
 
     trans = IHSTransformer(ts, interval=train_intv)
     trans_ts = trans.transform(ts)
+    plot_pacf(trans_ts).show()
 
     fig1 = plot_ts(trans_ts, engine="plotly",
                    title=f"Covid-19 New Cases in {loc} – Transformed")

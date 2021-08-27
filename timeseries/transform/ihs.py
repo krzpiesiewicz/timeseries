@@ -1,14 +1,16 @@
+import sys
+
 import numpy as np
 import pandas as pd
 import pmdarima as pm
 
-from timeseries import Interval
 from timeseries.transform.transformer import Transformer
 
 
 class IHSTransformer(Transformer):
     def __init__(self, ts, interval=None, d=None, lmb="auto",
-                 save_loglikelihood_deriv=False):
+                 save_loglikelihood_deriv=False, verbose=False):
+        self.verbose = verbose
         self.d = d
         self.lmb = lmb
         self.save_loglikelihood_deriv = save_loglikelihood_deriv
@@ -30,6 +32,8 @@ class IHSTransformer(Transformer):
                 self.d = pm.arima.ndiffs(x)
             except:
                 self.d = 2
+            if self.verbose:
+                print(f"Order of differencing: {self.d}", file=sys.stderr)
             ts, interval = self.__get_ts_and_interval__(ts, interval)
         assert (interval is not None)
         ts = interval.view(ts, prevs=self.d)
@@ -44,6 +48,13 @@ class IHSTransformer(Transformer):
                     calc_mle_of_lmb(x, get_loglikelihood_deriv=True)
             else:
                 self.lmb = calc_mle_of_lmb(x)
+            if self.verbose:
+                if self.lmb is None:
+                    print(f"MLE of IHS lambda cannot be found",
+                          file=sys.stderr)
+                else:
+                    print(f"MLE of IHS lambda: {self.lmb}",
+                          file=sys.stderr)
         if type(self.lmb) is float:
             x = np.arcsinh(x * self.lmb) / self.lmb
         if self.mean is None:
