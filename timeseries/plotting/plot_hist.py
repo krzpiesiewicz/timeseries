@@ -6,7 +6,7 @@ from plotly.subplots import make_subplots
 
 
 def plot_hist(values, **kwargs):
-    if "fig" in kwargs:
+    if "fig" in kwargs and kwargs["fig"] is not None:
         engine = (
             "pyplot" if "matplotlib" in f"{type(kwargs['fig'])}" else "plotly"
         )
