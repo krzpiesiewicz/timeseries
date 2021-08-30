@@ -13,7 +13,7 @@ class Interval:
         if begin is not None and begin >= ts.index[0]:
             index = ts.loc[begin:].index
             if prevs > 0:
-                index = ts.loc[:begin].index[-prevs - 1:-1].append(index)
+                index = ts.loc[:begin].index[-prevs:].append(index)
         if prevs < 0:
             index = index[-prevs:]
         if end is not None and end <= ts.index[-1]:

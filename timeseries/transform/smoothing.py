@@ -3,7 +3,7 @@ import pandas as pd
 from scipy.stats import norm
 
 
-def get_smoothed(ts, std=None, weights=None, only_prevs=False):
+def get_smoothed(ts, std=None, weights=None, only_prevs=True):
     if weights is not None:
         assert std is None
     else:
