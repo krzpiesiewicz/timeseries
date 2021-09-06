@@ -13,12 +13,13 @@ class Interval:
         if begin is not None and begin >= ts.index[0]:
             index = ts.loc[begin:].index
             if prevs > 0:
-                index = ts.loc[:begin].index[-prevs:].append(index)
+                index_prevs = prevs + 1 if begin in ts.index else prevs
+                index = ts.loc[:begin].index[-index_prevs:].append(index)
         if prevs < 0:
             index = index[-prevs:]
         if end is not None and end <= ts.index[-1]:
             index = index.intersection(ts.loc[:end].index)
-            if index[-1] == end:
+            if len(index) > 0 and index[-1] == end:
                 index = index[:-1]
             if nexts > 0:
                 index = index.append(ts.loc[end:].index[:nexts])
