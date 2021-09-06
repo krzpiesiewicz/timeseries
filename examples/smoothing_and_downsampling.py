@@ -3,10 +3,10 @@ from datetime import datetime, timedelta
 import pandas as pd
 
 from timeseries import Interval
-from timeseries.plotting import plot_ts, plot_hist, plot_acf, plot_pacf
-from timeseries.transform.ihs import IHSTransformer
+from timeseries.plotting import plot_ts
 from timeseries.transform import get_smoothed, get_downsampled, \
     get_interpolated
+
 
 def main():
     # .csv available to download at:
@@ -17,7 +17,7 @@ def main():
     gpd_usd_data.set_index("Date", inplace=True)
     gpd_usd_data.sort_index(ascending=True, inplace=True)
 
-    ts = gpd_usd_data.Price[datetime(2019, 1, 1) : datetime(2019, 3, 1)]
+    ts = gpd_usd_data.Price[datetime(2019, 1, 1): datetime(2019, 3, 1)]
     intv = Interval(ts, datetime(2019, 1, 5), datetime(2019, 2, 10))
 
     smoothed_ts = get_smoothed(ts, std=5)

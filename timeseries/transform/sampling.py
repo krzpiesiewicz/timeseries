@@ -1,4 +1,5 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+
 import numpy as np
 import pandas as pd
 
@@ -24,29 +25,24 @@ def get_downsampled(ts, delta, intv=None, index_values=True):
     else:
         return intv_ts.iloc[np.arange(0, len(intv_ts.index), delta)]
 
+
 def get_interpolated(ts, intv, original_ts=None):
     original_ts = intv.view() if original_ts is None else intv.view(
         original_ts)
     index = original_ts.index
-    # print(index)
     interpolated_ts = pd.Series(np.full(len(index), np.nan), index=index)
-    # print(ts.index)
-    # print(Interval(ts, intv.begin, intv.end).view())
     ts = Interval(ts, intv.begin, intv.end).view(ts, prevs=1, nexts=1)
-    # print(ts.index)
     j = 0
     n = len(interpolated_ts)
     for i in range(0, len(ts) - 1):
         a = ts.index[i]
         b = ts.index[i + 1]
-        # print(f"a = {a}, b={b}")
-        while interpolated_ts.index[j] < a:
+        while j < n and interpolated_ts.index[j] < a:
             interpolated_ts.iloc[j] = ts[a]
             j += 1
         while j < n and interpolated_ts.index[j] <= b:
             idx = interpolated_ts.index[j]
-            # print(f"idx = {idx}")
-            interpolated_ts.iloc[j] =\
+            interpolated_ts.iloc[j] = \
                 ts[a] + (ts[b] - ts[a]) * (idx - a) / (b - a)
             j += 1
     while j < n:

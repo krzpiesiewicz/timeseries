@@ -21,9 +21,9 @@ def get_smoothed(ts, std=None, weights=None, only_prevs=True):
     y[m:-m] = x
     s = np.zeros_like(x)
     if only_prevs:
-        weights[m + 1 :] = 0
+        weights[m + 1:] = 0
     weights = weights / np.sum(weights)
     for i, w in enumerate(weights):
         if w != 0:
-            s += w * y[i : n + i]
+            s += w * y[i: n + i]
     return pd.Series(s, index=ts.index)
