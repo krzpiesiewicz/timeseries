@@ -12,6 +12,8 @@ class IHSTransformer(Transformer):
                  save_loglikelihood_deriv=False, verbose=False):
         self.verbose = verbose
         self.d = d
+        if lmb is not None and lmb != "auto":
+            lmb = float(lmb)
         self.lmb = lmb
         self.save_loglikelihood_deriv = save_loglikelihood_deriv
         self.std = None
@@ -147,7 +149,7 @@ def bisection(f, a, b, tol):
         raise Exception("the scalars a and b do not bound a root")
     m = (a + b) / 2
     if np.abs(f(m)) < tol:
-        return m
+        return float(m)
     elif np.sign(f(a)) == np.sign(f(m)):
         return bisection(f, m, b, tol)
     elif np.sign(f(b)) == np.sign(f(m)):
