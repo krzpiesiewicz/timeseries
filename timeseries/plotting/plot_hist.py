@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+from matplotlib import colors as mcolors
 from plotly.subplots import make_subplots
 
 
@@ -52,7 +53,8 @@ def pyplot_hist(
 
 
 def plotly_hist(values, title=None, name=None, fig=None, width=None,
-                height=None, fontsize=14, **kwargs):
+                height=None, fontsize=14, color=None,
+                go_kwargs={}, trace_kwargs={}, **kwargs):
     if type(values) is pd.Series:
         if name is None:
             name = values.name
@@ -75,11 +77,36 @@ def plotly_hist(values, title=None, name=None, fig=None, width=None,
             template="simple_white",
         )
     hist = px.histogram(values, **kwargs)
+
+    if "marker" in go_kwargs:
+        marker = go_kwargs["marker"]
+    else:
+        marker = {}
+        go_kwargs["marker"] = marker
+
+    def get_go_hist(color=None):
+        if color is not None:
+            marker["color"] = color
+        else:
+            marker.pop("color", None)
+        return go.Histogram(x=hist.data[0].x,
+                            y=hist.data[0].y,
+                            name=name,
+                            **go_kwargs
+                            )
+
+    try:
+        go_hist = get_go_hist(color=color)
+    except ValueError as _:
+        try:
+            color = mcolors.to_hex(color)
+            go_hist = get_go_hist(color=color)
+        except BaseException as _:
+            go_hist = get_go_hist()
+
     fig.add_trace(
-        go.Histogram(x=hist.data[0].x,
-                     y=hist.data[0].y,
-                     name=name,
-                     ),
-        secondary_y=False
+        go_hist,
+        secondary_y=False,
+        **trace_kwargs
     )
     return fig
