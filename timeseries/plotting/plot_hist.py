@@ -31,18 +31,18 @@ def pyplot_hist(
         fig=None,
         title=None,
         fontsize=14,
-        width=900,
-        height=500,
+        width=1030,
+        height=700,
         **kwargs):
     plt.ioff()
     plt.rcParams.update({"font.size": fontsize})
     if fig is None:
         fig = plt.figure()
         axs = [fig.subplots(1)]
+        if title is not None:
+            fig.suptitle(title, fontsize=26)
     else:
         axs = fig.get_axes()
-    if title is not None:
-        fig.suptitle(title, fontsize=26)
     axs[0].hist(values, bins=bins, alpha=alpha, label=name, **kwargs)
     if name is not None:
         axs[0].legend()
