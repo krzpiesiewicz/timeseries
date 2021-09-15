@@ -55,7 +55,7 @@ class IHSTransformer(Transformer):
                     print(f"MLE of IHS lambda cannot be found",
                           file=sys.stderr)
                 else:
-                    print(f"MLE of IHS lambda: {self.lmb}",
+                    print(f"MLE of IHS lambda: {self.lmb:e}",
                           file=sys.stderr)
         if type(self.lmb) is float:
             x = np.arcsinh(x * self.lmb) / self.lmb
