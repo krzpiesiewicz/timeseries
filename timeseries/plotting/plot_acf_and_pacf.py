@@ -1,17 +1,38 @@
 import matplotlib.pyplot as plt
-import statsmodels.api as sm
-import pandas as pd
+import numpy as np
+
+from timeseries.analysis import acf, pacf
 
 
-def plot_acf(ts, **kwargs):
-    return plot_acf_or_pacf(ts, "ACF", **kwargs)
+def __plot_stat_fun__(stat_fun, *args, kind_of_statistics=None,
+                      plot_params={}, **kwargs):
+    for param in ["zero", "label", "fig", "ax", "title", "width", "height",
+                  "figsize"]:
+        if param in kwargs:
+            plot_params[param] = kwargs[param]
+            kwargs.pop(param)
+
+    res = stat_fun(*args, **kwargs)
+    if type(res) is tuple:
+        res = list(res)
+    else:
+        res = [res]
+    assert len(res) <= 2
+    return plot_stats(*res, kind_of_statistics=kind_of_statistics,
+                      **plot_params)
 
 
-def plot_pacf(ts, **kwargs):
-    return plot_acf_or_pacf(ts, "PACF", **kwargs)
+def plot_acf(*args, plot_params={}, **kwargs):
+    return __plot_stat_fun__(acf, *args, kind_of_statistics="ACF",
+                             plot_params=plot_params, **kwargs)
 
 
-def plot_acf_or_pacf(ts, kind_of_statistics, **kwargs):
+def plot_pacf(*args, plot_params={}, **kwargs):
+    return __plot_stat_fun__(pacf, *args, kind_of_statistics="PACF",
+                             plot_params=plot_params, **kwargs)
+
+
+def plot_stats(*args, **kwargs):
     if "fig" in kwargs:
         engine = (
             "pyplot" if "matplotlib" in f"{type(kwargs['fig'])}" else "plotly"
@@ -20,65 +41,78 @@ def plot_acf_or_pacf(ts, kind_of_statistics, **kwargs):
         engine = kwargs["engine"] if "engine" in kwargs else "pyplot"
     kwargs.pop("engine", None)
     if engine == "pyplot":
-        return pyplot_acf_or_pacf(ts, kind_of_statistics, **kwargs)
+        return pyplot_stats(*args, **kwargs)
     elif engine == "plotly":
-        raise Exception("Plottly not supported by plot_pacf yet")
+        raise Exception("Plottly not supported by this function yet")
     else:
         raise Exception("Unknown plotting engine")
 
 
-def pyplot_acf_or_pacf(
-        ts,
-        kind_of_statistics,
-        name=None,
+def pyplot_stats(
+        values,
+        conf_intvs=None,
+        zero=True,
+        kind_of_statistics=None,
+        label=None,
         fig=None,
+        ax=None,
         title=None,
         fontsize=14,
-        width=900,
-        height=500,
+        width=1030,
+        height=700,
         **kwargs):
     plt.ioff()
     plt.rcParams.update({"font.size": fontsize})
-    if fig is None:
+    if fig is None and ax is None:
         fig = plt.figure()
-        axs = [fig.subplots(1)]
-    else:
-        axs = fig.get_axes()
-    if title is not None:
-        fig.suptitle(title, fontsize=26)
-
-    if type(ts) is pd.Series:
-        ts = ts.values
-    if kind_of_statistics == "ACF":
         if title is None:
-            title = "Autocorrelation"
-        sm.graphics.tsa.plot_acf(
-            ts,
-            label=name,
-            title=None,
-            ax=axs[0],
-            **kwargs
-        )
-    else:
-        if kind_of_statistics == "PACF":
-            if title is None:
+            if kind_of_statistics == "ACF":
+                title = "Autocorrelation"
+            if kind_of_statistics == "PACF":
                 title = "Partial Autocorrelation"
-            sm.graphics.tsa.plot_pacf(
-                ts,
-                label=name,
-                title=None,
-                ax=axs[0],
-                **kwargs
-            )
-        else:
-            raise Exception("kind_of_statistics must be 'ACF' or 'PACF")
+        if title != "":
+            fig.suptitle(title, fontsize=26)
+        ax = fig.subplots(1)
+    else:
+        if ax is None:
+            ax = fig.get_axes()[0]
 
-    if title is not None:
-        fig.suptitle(title, fontsize=26)
+    xs = np.arange(not zero, len(values), dtype=float)
+    if not zero:
+        values = values[1:]
+    ymin = np.vectorize(lambda x: min(x, 0.0))(values)
+    ymax = np.vectorize(lambda x: max(x, 0.0))(values)
+    if "markersize" not in kwargs:
+        kwargs["markersize"] = 5
+    ax.plot(xs, values, "o", label=label, **kwargs)
+    ax.vlines(
+        xs,
+        ymin,
+        ymax,
+        colors=None,
+        linestyles="solid",
+        label="",
+    )
 
-    if name is not None:
-        axs[0].legend()
-    dpi = fig.get_dpi()
-    c = 1
-    fig.set_size_inches((int(width / dpi * c), int(height / dpi * c)))
+    ax.margins(0.05)
+    ax.axhline()
+
+    if conf_intvs is not None:
+        conf_intvs = conf_intvs[1:]
+        if xs[0] == 0:
+            xs = xs[1:]
+            values = values[1:]
+        xs[0] -= 0.5
+        xs[-1] += 0.5
+        ax.fill_between(
+            xs, conf_intvs[:, 0] - values, conf_intvs[:, 1] - values,
+            alpha=0.25
+        )
+
+    if label is not None:
+        ax.legend()
+    if fig is not None:
+        dpi = fig.get_dpi()
+        c = 1
+        fig.set_size_inches((int(width / dpi * c), int(height / dpi * c)))
     return fig

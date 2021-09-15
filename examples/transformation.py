@@ -98,9 +98,6 @@ def main():
               name="differenced with IHS", color="tab:orange")
     figh.show()
 
-    plot_acf(trans_ihs_ts).show()
-    plot_pacf(trans_ihs_ts).show()
-
     detrans_ts = trans_ihs.detransform(train_intv.view(trans_ihs_ts),
                                    train_intv.prev_view())
 
