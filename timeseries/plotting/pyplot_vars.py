@@ -38,6 +38,7 @@ def pyplot_vars(
         rotx=0,
         ha="center",
         title=None,
+        **kwargs,
 ):
     plt.ioff()
     if "pandas.core." in f"{type(index)}":
@@ -56,7 +57,7 @@ def pyplot_vars(
         is_datetime_x = True
 
     def plot_single(ax, ts):
-        ax.plot(index_values, ts[index], color=color, label=name)
+        ax.plot(index_values, ts[index], color=color, label=name, **kwargs)
         if name is not None:
             ax.legend()
 
