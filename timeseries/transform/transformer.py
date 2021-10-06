@@ -9,7 +9,7 @@ class Transformer(ABC):
             if interval is None:
                 interval = ts
             ts = interval.ts
-        if self.d is not None and interval is None:
+        if self.d != "auto" and interval is None:
             interval = Interval(ts, begin=ts.index[self.d])
         return ts, interval
 

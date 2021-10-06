@@ -8,13 +8,15 @@ from timeseries.transform.transformer import Transformer
 
 
 class IHSTransformer(Transformer):
-    def __init__(self, ts, interval=None, d=None, lmb="auto",
+    def __init__(self, ts, interval=None, d="auto", lmb="auto",
+                 ihs_after_diff=False,
                  save_loglikelihood_deriv=False, verbose=False):
         self.verbose = verbose
         self.d = d
         if lmb is not None and lmb != "auto":
             lmb = float(lmb)
         self.lmb = lmb
+        self.ihs_after_diff = ihs_after_diff
         self.save_loglikelihood_deriv = save_loglikelihood_deriv
         self.std = None
         self.mean = None
@@ -28,7 +30,7 @@ class IHSTransformer(Transformer):
         ts, interval = self.__get_ts_and_interval__(ts, interval)
         if ts.isnull().sum() > 0:
             raise Exception("Series has missing value")
-        if self.d is None:
+        if self.d == "auto":
             x = interval.view(ts) if interval is not None else ts
             try:
                 self.d = pm.arima.ndiffs(x)
@@ -39,11 +41,17 @@ class IHSTransformer(Transformer):
             ts, interval = self.__get_ts_and_interval__(ts, interval)
         assert (interval is not None)
         ts = interval.view(ts, prevs=self.d)
+
+        def difference(x):
+            if self.d >= 1:
+                x = np.diff(x, 1)
+            if self.d >= 2:
+                x = np.diff(x, self.d - 1)
+            return x
+
         x = ts
-        if self.d >= 1:
-            x = np.diff(x, 1)
-        if self.d >= 2:
-            x = np.diff(x, self.d - 1)
+        if not self.ihs_after_diff:
+            x = difference(x)
         if self.lmb == "auto":
             if self.save_loglikelihood_deriv:
                 self.lmb, self.loglikelihood_deriv = \
@@ -59,6 +67,8 @@ class IHSTransformer(Transformer):
                           file=sys.stderr)
         if type(self.lmb) is float:
             x = np.arcsinh(x * self.lmb) / self.lmb
+        if self.ihs_after_diff:
+            x = difference(x)
         if self.mean is None:
             self.mean = np.mean(x)
         x = x - self.mean
@@ -82,16 +92,25 @@ class IHSTransformer(Transformer):
             else:
                 index = pd.Index(np.arange(len(diffs_ts)))
         ts = pd.Series(diffs_ts, index=index)
+
+        def dedifference(ts):
+            if self.d == 2:
+                self.prev_val = prev_original_values[-1] - \
+                                prev_original_values[-2]
+                ts = ts.apply(self.__next_val__)
+            if self.d >= 1:
+                self.prev_val = prev_original_values[-1]
+                ts = ts.apply(self.__next_val__)
+            return ts
+
         ts = (ts * self.std)
         ts += self.mean
+        if self.ihs_after_diff:
+            ts = dedifference(ts)
         if type(self.lmb) is float:
             ts = (ts * self.lmb).apply(np.sinh) / self.lmb
-        if self.d == 2:
-            self.prev_val = prev_original_values[-1] - prev_original_values[-2]
-            ts = ts.apply(self.__next_val__)
-        if self.d >= 1:
-            self.prev_val = prev_original_values[-1]
-            ts = ts.apply(self.__next_val__)
+        if not self.ihs_after_diff:
+            ts = dedifference(ts)
         return ts
 
 
