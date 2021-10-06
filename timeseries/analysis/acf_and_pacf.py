@@ -18,7 +18,6 @@ def cross_validated_acf_or_pacf(
         *args,
         kind_of_statistics=None,
         cross_validated=False,
-        nlags=None,
         nblocks=5,
         blocks_group=3,
         **kwargs):
@@ -40,21 +39,22 @@ def cross_validated_acf_or_pacf(
         stat_conf_intvs = None
         pos = np.linspace(0, len(x) - 1, nblocks + 1, dtype=int)
         n = nblocks - blocks_group + 1
+        lags = None
         for i in range(0, n):
             y = x[pos[i]: pos[i + blocks_group]]
-            values, conf_intvs = stat_fun(y, *args, nlags=nlags, **kwargs)
-            if nlags is None:
-                nlags = len(values)
-            if len(values) > nlags:
-                values = values[:nlags]
-                conf_intvs = conf_intvs[:nlags, :]
-            if len(values) < nlags:
-                nlags = len(values)
-                stat_values = stat_values[:nlags]
-                stat_conf_intvs = stat_conf_intvs[:nlags, :]
+            values, conf_intvs = stat_fun(y, *args, **kwargs)
+            if lags is None:
+                lags = len(values)
+            if len(values) > lags:
+                values = values[:lags]
+                conf_intvs = conf_intvs[:lags, :]
+            if len(values) < lags:
+                lags = len(values)
+                stat_values = stat_values[:lags]
+                stat_conf_intvs = stat_conf_intvs[:lags, :]
             if stat_values is None:
-                stat_values = values[:nlags]
-                stat_conf_intvs = conf_intvs[:nlags]
+                stat_values = values
+                stat_conf_intvs = conf_intvs
             else:
                 stat_values += values
                 stat_conf_intvs += conf_intvs

@@ -24,6 +24,7 @@ def main():
                           end=datetime(2021, 3, 1))
 
     print(f"acf for whole ts: {acf(ts)}")
+    print(f"acf for whole ts with conf intvs: {acf(ts, alpha=0.05)}")
     acf_values, confint = acf(train_intv.view(ts), alpha=0.05)
     plot_stats(acf_values, confint, label="train").show()
     plot_acf(ts, zero=False, label="whole").show()
@@ -32,7 +33,7 @@ def main():
     plot_pacf(train_intv.view(ts), alpha=0.05, zero=False,
               label="train", fig=fig)
     plot_pacf(ts, alpha=0.05, zero=False,
-              cross_validated=True, nblocks=6, blocks_group=4,
+              cross_validated=True, nblocks=7, blocks_group=5,
               label="cross validated whole", fig=fig).show()
 
 

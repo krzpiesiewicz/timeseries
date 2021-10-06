@@ -6,6 +6,7 @@ from timeseries.analysis import acf, pacf
 
 def __plot_stat_fun__(stat_fun, *args, kind_of_statistics=None,
                       plot_params={}, **kwargs):
+    plot_params = plot_params.copy()
     for param in ["zero", "label", "fig", "ax", "title", "width", "height",
                   "figsize"]:
         if param in kwargs:
@@ -33,7 +34,7 @@ def plot_pacf(*args, plot_params={}, **kwargs):
 
 
 def plot_stats(*args, **kwargs):
-    if "fig" in kwargs:
+    if "fig" in kwargs and kwargs["fig"] is not None:
         engine = (
             "pyplot" if "matplotlib" in f"{type(kwargs['fig'])}" else "plotly"
         )
@@ -51,6 +52,7 @@ def plot_stats(*args, **kwargs):
 def pyplot_stats(
         values,
         conf_intvs=None,
+        xs=None,
         zero=True,
         kind_of_statistics=None,
         label=None,
@@ -62,22 +64,22 @@ def pyplot_stats(
         height=700,
         **kwargs):
     plt.ioff()
-    plt.rcParams.update({"font.size": fontsize})
     if fig is None and ax is None:
+        plt.rcParams.update({"font.size": fontsize})
         fig = plt.figure()
+        ax = fig.subplots(1)
         if title is None:
             if kind_of_statistics == "ACF":
                 title = "Autocorrelation"
             if kind_of_statistics == "PACF":
                 title = "Partial Autocorrelation"
-        if title != "":
+        if title is not None and title != "":
             fig.suptitle(title, fontsize=26)
-        ax = fig.subplots(1)
-    else:
-        if ax is None:
-            ax = fig.get_axes()[0]
+    if ax is None:
+        ax = fig.get_axes()[0]
 
-    xs = np.arange(not zero, len(values), dtype=float)
+    if xs is None:
+        xs = np.arange(not zero, len(values), dtype=float)
     if not zero:
         values = values[1:]
     ymin = np.vectorize(lambda x: min(x, 0.0))(values)
@@ -85,6 +87,8 @@ def pyplot_stats(
     if "markersize" not in kwargs:
         kwargs["markersize"] = 5
     ax.plot(xs, values, "o", label=label, **kwargs)
+    if label is not None:
+        ax.legend()
     ax.vlines(
         xs,
         ymin,
@@ -109,8 +113,6 @@ def pyplot_stats(
             alpha=0.25
         )
 
-    if label is not None:
-        ax.legend()
     if fig is not None:
         dpi = fig.get_dpi()
         c = 1
