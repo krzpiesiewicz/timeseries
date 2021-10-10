@@ -9,14 +9,14 @@ from timeseries.transform.transformer import Transformer
 
 class IHSTransformer(Transformer):
     def __init__(self, ts, interval=None, d="auto", lmb="auto",
-                 ihs_after_diff=False,
+                 difference_first=True,
                  save_loglikelihood_deriv=False, verbose=False):
         self.verbose = verbose
         self.d = d
         if lmb is not None and lmb != "auto":
             lmb = float(lmb)
         self.lmb = lmb
-        self.ihs_after_diff = ihs_after_diff
+        self.ihs_after_diff = difference_first
         self.save_loglikelihood_deriv = save_loglikelihood_deriv
         self.std = None
         self.mean = None
@@ -27,20 +27,6 @@ class IHSTransformer(Transformer):
         return self.prev_val
 
     def transform(self, ts, interval=None):
-        ts, interval = self.__get_ts_and_interval__(ts, interval)
-        if ts.isnull().sum() > 0:
-            raise Exception("Series has missing value")
-        if self.d == "auto":
-            x = interval.view(ts) if interval is not None else ts
-            try:
-                self.d = pm.arima.ndiffs(x)
-            except:
-                self.d = 2
-            if self.verbose:
-                print(f"Order of differencing: {self.d}", file=sys.stderr)
-            ts, interval = self.__get_ts_and_interval__(ts, interval)
-        assert (interval is not None)
-        ts = interval.view(ts, prevs=self.d)
 
         def difference(x):
             if self.d >= 1:
@@ -49,26 +35,49 @@ class IHSTransformer(Transformer):
                 x = np.diff(x, self.d - 1)
             return x
 
-        x = ts
-        if not self.ihs_after_diff:
-            x = difference(x)
-        if self.lmb == "auto":
-            if self.save_loglikelihood_deriv:
-                self.lmb, self.loglikelihood_deriv = \
-                    calc_mle_of_lmb(x, get_loglikelihood_deriv=True)
-            else:
-                self.lmb = calc_mle_of_lmb(x)
-            if self.verbose:
-                if self.lmb is None:
-                    print(f"MLE of IHS lambda cannot be found",
-                          file=sys.stderr)
+        def ihs_trans(x):
+            if self.lmb == "auto":
+                if self.save_loglikelihood_deriv:
+                    self.lmb, self.loglikelihood_deriv = \
+                        calc_mle_of_lmb(x, get_loglikelihood_deriv=True)
                 else:
-                    print(f"MLE of IHS lambda: {self.lmb:e}",
-                          file=sys.stderr)
-        if type(self.lmb) is float:
-            x = np.arcsinh(x * self.lmb) / self.lmb
+                    self.lmb = calc_mle_of_lmb(x)
+                if self.verbose:
+                    if self.lmb is None:
+                        print(f"MLE of IHS lambda cannot be found",
+                              file=sys.stderr)
+                    else:
+                        print(f"MLE of IHS lambda: {self.lmb:e}",
+                              file=sys.stderr)
+            if type(self.lmb) is float:
+                x = np.arcsinh(x * self.lmb) / self.lmb
+            return x
+
+        ts, interval = self.__get_ts_and_interval__(ts, interval)
+        if ts.isnull().sum() > 0:
+            raise Exception("Series has missing value")
+
+        if not self.ihs_after_diff:
+            # if self.d == "auto":
+            #     x = interval.view(x) if interval is not None else x
+            #     x, interval = self.__get_ts_and_interval__(x, interval)
+            ts = ihs_trans(ts)
+
+        if self.d == "auto":
+            ts = interval.view(ts) if interval is not None else ts
+            try:
+                self.d = pm.arima.ndiffs(ts)
+            except:
+                self.d = 2
+            if self.verbose:
+                print(f"Order of differencing: {self.d}", file=sys.stderr)
+            ts, interval = self.__get_ts_and_interval__(ts, interval)
+        assert (interval is not None)
+        ts = interval.view(ts, prevs=self.d)
+        x = difference(ts)
+
         if self.ihs_after_diff:
-            x = difference(x)
+            x = ihs_trans(x)
         if self.mean is None:
             self.mean = np.mean(x)
         x = x - self.mean
@@ -83,17 +92,8 @@ class IHSTransformer(Transformer):
         return x
 
     def detransform(self, diffs_ts, prev_original_values, index=None):
-        if type(prev_original_values) is not np.ndarray:
-            prev_original_values = np.array(prev_original_values)
-        assert len(prev_original_values) >= self.d
-        if index is None:
-            if type(diffs_ts) is pd.Series:
-                index = diffs_ts.index
-            else:
-                index = pd.Index(np.arange(len(diffs_ts)))
-        ts = pd.Series(diffs_ts, index=index)
 
-        def dedifference(ts):
+        def dedifference(ts, prev_original_values):
             if self.d == 2:
                 self.prev_val = prev_original_values[-1] - \
                                 prev_original_values[-2]
@@ -103,14 +103,36 @@ class IHSTransformer(Transformer):
                 ts = ts.apply(self.__next_val__)
             return ts
 
+        def ihs_trans(x):
+            if type(self.lmb) is float:
+                x = np.arcsinh(x * self.lmb) / self.lmb
+            return x
+
+        def ihs_detrans(ts):
+            if type(self.lmb) is float:
+                ts = (ts * self.lmb).apply(np.sinh) / self.lmb
+            return ts
+
+        if type(prev_original_values) is not np.ndarray:
+            prev_original_values = np.array(prev_original_values)
+        assert len(prev_original_values) >= self.d
+        if index is None:
+            if type(diffs_ts) is pd.Series:
+                index = diffs_ts.index
+            else:
+                index = pd.Index(np.arange(len(diffs_ts)))
+        ts = pd.Series(diffs_ts, index=index)
         ts = (ts * self.std)
         ts += self.mean
+
         if self.ihs_after_diff:
-            ts = dedifference(ts)
-        if type(self.lmb) is float:
-            ts = (ts * self.lmb).apply(np.sinh) / self.lmb
-        if not self.ihs_after_diff:
-            ts = dedifference(ts)
+            ts = ihs_detrans(ts)
+            ts = dedifference(ts, prev_original_values)
+        else:
+            prev_original_values = ihs_trans(prev_original_values)
+            ts = dedifference(ts, prev_original_values)
+            ts = ihs_detrans(ts)
+
         return ts
 
 

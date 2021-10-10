@@ -2,8 +2,8 @@ from datetime import datetime
 
 import pandas as pd
 
-from timeseries import Interval
-from timeseries.plotting import plot_ts, plot_hist, plot_acf, plot_pacf
+from timeseries import Interval, plot_ts
+from timeseries.analysis import plot_hist
 from timeseries.transform.ihs import IHSTransformer
 
 
@@ -27,31 +27,55 @@ def main():
     trans = IHSTransformer(ts, interval=train_intv, verbose=True,
                            lmb=None)
     trans_ts = trans.transform(ts)
-    print(f"differenced only – skewness: {trans_ts.skew()}")
+    print(f"Differences – skewness: {trans_ts.skew()}")
 
     trans_ihs = IHSTransformer(ts, interval=train_intv, verbose=True,
                            save_loglikelihood_deriv=True)
-
     trans_ihs_ts = trans_ihs.transform(ts)
-    print(f"differenced with IHS – skewness: {trans_ihs_ts.skew()}")
+    print(f"Differences of IHS – skewness: {trans_ihs_ts.skew()}")
     fig1 = plot_ts(whole_intv.view(trans_ts),
-                   title="GBP/USD Daily – IHS Transformed")
+                   title="GBP/USD Daily – IHS Transformed Diferences")
     plot_ts(train_intv.view(trans_ihs_ts), color="tab:red", name="Train",
             fig=fig1)
     fig1.show()
 
-    figh = plot_hist(whole_intv.view(trans_ts), bins=50,
-            title="GBP/USD Daily – Histogram of Transformed",
-            name="differenced only")
-    plot_hist(whole_intv.view(trans_ihs_ts), fig=figh, bins=50,
-              name="differenced with IHS")
-    figh.show()
+    trans_diff_after_ihs = IHSTransformer(
+        ts, interval=train_intv, difference_first=False,
+                                          verbose=True,
+                               save_loglikelihood_deriv=True
+    )
+    trans_diff_after_ihs_ts = trans_diff_after_ihs.transform(ts)
+    print(f"IHS for differences – skewness:"
+          f" {trans_diff_after_ihs_ts.skew()}")
+    fig1 = plot_ts(whole_intv.view(trans_ts),
+                   title="GBP/USD Daily – Differences of IHS Transformed")
+    plot_ts(train_intv.view(trans_diff_after_ihs_ts), color="tab:red", name="Train",
+            fig=fig1)
+    fig1.show()
 
-    detrans_ts = trans_ihs.detransform(train_intv.view(trans_ihs_ts), \
+    # figh = plot_hist(whole_intv.view(trans_ts), bins=50,
+    #         title="GBP/USD Daily – Histogram of Transformed",
+    #         name="differenced only")
+    # plot_hist(whole_intv.view(trans_ihs_ts), fig=figh, bins=50,
+    #           name="differenced with IHS")
+    # figh.show()
+
+    detrans_ts = trans.detransform(train_intv.view(trans_ts),
+                                       train_intv.prev_view())
+    detrans_ihs_ts = trans_ihs.detransform(train_intv.view(trans_ihs_ts),
                                    train_intv.prev_view())
+    detrans_diff_after_ihs_ts = trans_diff_after_ihs.detransform(
+        train_intv.view(trans_diff_after_ihs_ts),
+                                       train_intv.prev_view())
 
     fig2 = plot_ts(whole_intv.view(), title="GBP/USD Daily")
-    plot_ts(detrans_ts, color="tab:red", name="Detransformed Train", fig=fig2)
+    plot_ts(detrans_ts, color="tab:orange", name="Detransformed", fig=fig2)
+    plot_ts(detrans_ihs_ts, color="tab:green", name="Detransformed IHS",
+            fig=fig2)
+    plot_ts(detrans_diff_after_ihs_ts, color="tab:red",
+            name="Detransformed "
+                                              "Differenced After IHS",
+            fig=fig2)
     fig2.show()
 
     # COVID
@@ -108,7 +132,7 @@ def main():
             fig=fig2)
     fig2.show()
 
-    # Evil Example
+    # # Evil Example
     # import numpy as np
     # from timeseries import ts_from_fun
     # fun = lambda x: np.exp(x / 200 + np.power(np.sin(x/50), 2))
