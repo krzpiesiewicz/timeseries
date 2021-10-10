@@ -2,8 +2,7 @@ from datetime import datetime, timedelta
 
 import pandas as pd
 
-from timeseries import Interval
-from timeseries.plotting import plot_ts
+from timeseries import Interval, plot_ts
 from timeseries.transform import get_smoothed, get_downsampled, \
     get_interpolated
 

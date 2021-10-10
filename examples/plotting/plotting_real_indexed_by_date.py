@@ -1,7 +1,7 @@
 import pandas as pd
 from matplotlib import dates as mdates
 
-from timeseries.plotting import plot_ts
+from timeseries import plot_ts
 
 
 def main():

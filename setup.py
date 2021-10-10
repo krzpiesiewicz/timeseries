@@ -22,6 +22,7 @@ setuptools.setup(
     install_requires=[
         "pandas>=1.0.5",
         "numpy~=1.19.0",
+        "scikit-learn>=0.22.0",
         "matplotlib>=3.2.2",
         "IPython>=5.5.0",
         "plotly>=4.5.0",

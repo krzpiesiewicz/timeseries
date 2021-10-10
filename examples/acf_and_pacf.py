@@ -3,8 +3,7 @@ from datetime import datetime
 import pandas as pd
 
 from timeseries import Interval
-from timeseries.analysis import acf
-from timeseries.plotting import plot_acf, plot_pacf, plot_stats
+from timeseries.analysis import acf, plot_acf, plot_pacf, plot_stats
 
 
 def main():

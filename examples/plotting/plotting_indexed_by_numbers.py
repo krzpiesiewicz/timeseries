@@ -1,7 +1,7 @@
 import pandas as pd
 
-from timeseries import transform_time, exp_grow, log_grow
-from timeseries.plotting import plot_ts
+from timeseries import plot_ts
+from timeseries.generator import transform_time, exp_grow, log_grow
 
 ts = pd.DataFrame.from_dict(
     {

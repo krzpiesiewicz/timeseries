@@ -105,7 +105,7 @@ def main():
     fig1.show()
 
     trans_ihs = IHSTransformer(ts, interval=train_intv,
-                               ihs_after_diff=True, verbose=True)
+                               difference_first=True, verbose=True)
     trans_ihs_ts = trans_ihs.transform(ts)
     print(f"differenced with IHS – skewness: {trans_ihs_ts.skew()}")
 
