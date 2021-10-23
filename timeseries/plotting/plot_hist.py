@@ -54,7 +54,7 @@ def pyplot_hist(
 
 def plotly_hist(values, title=None, name=None, fig=None, width=None,
                 height=None, fontsize=14, color=None,
-                go_kwargs={}, trace_kwargs={}, **kwargs):
+                go_kwargs={}, trace_kwargs={}, layout_kwargs={}, **kwargs):
     if type(values) is pd.Series:
         if name is None:
             name = values.name
@@ -75,6 +75,7 @@ def plotly_hist(values, title=None, name=None, fig=None, width=None,
             title_x=0.5,
             title_yanchor="top",
             template="simple_white",
+            **layout_kwargs,
         )
     hist = px.histogram(values, **kwargs)
 
