@@ -8,7 +8,7 @@ def __plot_stat_fun__(stat_fun, *args, kind_of_statistics=None,
                       plot_params={}, **kwargs):
     plot_params = plot_params.copy()
     for param in ["zero", "label", "fig", "ax", "title", "width", "height",
-                  "figsize"]:
+                  "figsize", "color", "showgrid", "conf_alpha"]:
         if param in kwargs:
             plot_params[param] = kwargs[param]
             kwargs.pop(param)
@@ -62,12 +62,18 @@ def pyplot_stats(
         fontsize=14,
         width=1030,
         height=700,
+        color=None,
+        alpha=1.0,
+        conf_alpha=0.25,
+        showgrid=False,
         **kwargs):
     plt.ioff()
     if fig is None and ax is None:
         plt.rcParams.update({"font.size": fontsize})
         fig = plt.figure()
         ax = fig.subplots(1)
+        if showgrid:
+            ax.grid(True)
         if title is None:
             if kind_of_statistics == "ACF":
                 title = "Autocorrelation"
@@ -86,7 +92,8 @@ def pyplot_stats(
     ymax = np.vectorize(lambda x: max(x, 0.0))(values)
     if "markersize" not in kwargs:
         kwargs["markersize"] = 5
-    ax.plot(xs, values, "o", label=label, **kwargs)
+    ax.plot(xs, values, "o", label=label, color=color, alpha=alpha, **kwargs)
+    color = ax.lines[-1].get_color()
     if label is not None:
         ax.legend()
     ax.vlines(
@@ -110,7 +117,8 @@ def pyplot_stats(
         xs[-1] += 0.5
         ax.fill_between(
             xs, conf_intvs[:, 0] - values, conf_intvs[:, 1] - values,
-            alpha=0.25
+            alpha=conf_alpha,
+            color=color,
         )
 
     if fig is not None:

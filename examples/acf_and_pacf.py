@@ -25,7 +25,8 @@ def main():
     print(f"acf for whole ts: {acf(ts)}")
     print(f"acf for whole ts with conf intvs: {acf(ts, alpha=0.05)}")
     acf_values, confint = acf(train_intv.view(ts), alpha=0.05)
-    plot_stats(acf_values, confint, label="train").show()
+    plot_stats(acf_values, confint, label="train", color="green",
+               showgrid=True).show()
     plot_acf(ts, zero=False, label="whole").show()
 
     fig = plot_pacf(ts, alpha=0.05)
