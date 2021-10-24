@@ -71,3 +71,19 @@ class MedianOfMediansModel(Model):
         m = self.m
         pred_values = np.array(self.medians * ((n + m - 1) // m))[:n]
         return pd.Series(pred_values, pred_index, name=pred_ts.name)
+
+
+def median_of_medians_model_version(val, suffix="", **kwargs):
+    val = dict(val, **kwargs)
+    model_name = "Median of Medians"
+    if "m" in val and val["m"] not in [0, 1]:
+        version = "({n_groups}, {group_size})[{m}]".format(**val)
+    else:
+        version = "({n_groups}, {group_size})".format(**val)
+    version += f"{suffix}"
+    return (model_name, version)
+
+
+def median_of_medians_model_version_str(val, **kwargs):
+    model_name, version = median_of_medians_model_version(val, **kwargs)
+    return f"{model_name} {version}"
