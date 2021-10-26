@@ -27,7 +27,7 @@ setuptools.setup(
         "IPython>=5.5.0",
         "plotly>=4.5.0",
         "pmdarima>=1.8.2",
-        "statsmodels>=0.10.0"
+        "statsmodels>=0.13.0"
     ],
     test_requirements=["pytest>=6.2.0"],
     python_requires='>=3.6',

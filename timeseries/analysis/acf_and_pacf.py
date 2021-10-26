@@ -20,6 +20,7 @@ def cross_validated_acf_or_pacf(
         cross_validated=False,
         nblocks=5,
         blocks_group=3,
+        debug=False,
         **kwargs):
     if kind_of_statistics == "ACF":
         stat_fun = stattools.acf
@@ -42,6 +43,9 @@ def cross_validated_acf_or_pacf(
         lags = None
         for i in range(0, n):
             y = x[pos[i]: pos[i + blocks_group]]
+            if debug:
+                print(f"{blocks_group}/{nblocks}, n={n}, i={i},"
+                      f"i+blocks_group={i + blocks_group}: {pos[i]}–{pos[i + blocks_group]}")
             values, conf_intvs = stat_fun(y, *args, **kwargs)
             if lags is None:
                 lags = len(values)

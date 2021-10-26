@@ -3,6 +3,10 @@ from matplotlib import dates as mdates
 from matplotlib import pyplot as plt
 from matplotlib import ticker
 
+from timeseries.plotting.fig_with_vertical_subplots import (
+    fig_with_vertical_subplots
+)
+
 DEBUG = False
 
 
@@ -17,10 +21,11 @@ def pyplot_vars(
         axs=None,
         axs_heights_ratios=None,
         ax_height=None,
-        xmargin=0,
+        xmargin=None,
         width=None,
         height=None,
         fontsize=13.5,
+        title_fontsize=26,
         xaxis_title=False,
         yaxis_title=False,
         ynbins=10,
@@ -71,50 +76,18 @@ def pyplot_vars(
         axs = [fig_axs[i] for i in axs]
     if not set_axs:
         if fig is None:
-            plt.rcParams.update({"font.size": fontsize})
-            gs_kw = {"height_ratios": axs_heights_ratios}
-            fig = plt.figure(constrained_layout=True)
-            axs = fig.subplots(nvars, gridspec_kw=gs_kw)
-            if nvars == 1:
-                axs = [axs]
-            for ax in axs:
-                ax.grid(True)
-                ax.set_xmargin(xmargin)
-            fontratio = fontsize / 13.5
-            subplots_titles_height = 0
-            for ax, var_name in zip(axs, vars_names):
-                if var_name != "":
-                    ax.set_title(var_name)
-                    subplots_titles_height += 18 * fontratio
-                subplots_titles_height += 18 * fontratio
-            if title is not None:
-                fig.suptitle(title, fontsize=26)
-                title_height = 53
-            else:
-                title_height = 0
-            if width is None:
-                width = 900
-            bottom = 35
-            if height is None:
-                if ax_height is None:
-                    ax_height = 500 if len(axs) == 1 else 400
-                spacing = 22
-                height = (
-                        bottom
-                        + ax_height * len(axs)
-                        + spacing * (len(axs) - 1)
-                        + title_height
-                        + subplots_titles_height
-                )
-            dpi = fig.get_dpi()
-            if DEBUG:
-                print(subplots_titles_height)
-                print(ax_height * len(axs))
-                print(spacing * (len(axs) - 1))
-                print(height)
-                print(dpi)
-            c = 1
-            fig.set_size_inches((int(width / dpi * c), int(height / dpi * c)))
+            fig, axs = fig_with_vertical_subplots(
+                nvars,
+                axs_heights_ratios=axs_heights_ratios,
+                ax_height=ax_height,
+                xmargin=xmargin,
+                width=width,
+                height=height,
+                fontsize=fontsize,
+                title_fontsize=title_fontsize,
+                title=title,
+                subplots_titles=vars_names,
+            )
         else:
             axs = fig.get_axes()
 

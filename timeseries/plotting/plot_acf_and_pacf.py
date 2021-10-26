@@ -1,14 +1,19 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+from timeseries.plotting.fig_with_vertical_subplots import (
+    fig_with_vertical_subplots
+)
 from timeseries.analysis import acf, pacf
 
 
 def __plot_stat_fun__(stat_fun, *args, kind_of_statistics=None,
                       plot_params={}, **kwargs):
     plot_params = plot_params.copy()
-    for param in ["zero", "label", "fig", "ax", "title", "width", "height",
-                  "figsize", "color", "showgrid", "conf_alpha"]:
+    for param in ["zero", "label", "fig", "ax", "title", "subtitle", "width",
+                  "height", "ax_height", "axs_heights_ratios", "fontsize",
+                  "title_fontsize", "figsize", "xmargin", "color",
+                  "showgrid", "conf_alpha"]:
         if param in kwargs:
             plot_params[param] = kwargs[param]
             kwargs.pop(param)
@@ -54,35 +59,50 @@ def pyplot_stats(
         conf_intvs=None,
         xs=None,
         zero=True,
+        color=None,
+        alpha=1.0,
+        conf_alpha=0.25,
         kind_of_statistics=None,
         label=None,
         fig=None,
         ax=None,
         title=None,
+        subtitle=None,
         fontsize=14,
-        width=1030,
-        height=700,
-        color=None,
-        alpha=1.0,
-        conf_alpha=0.25,
+        title_fontsize=26,
+        axs_heights_ratios=None,
+        ax_height=None,
+        xmargin=None,
+        width=None,
+        height=None,
         showgrid=False,
         **kwargs):
     plt.ioff()
     if fig is None and ax is None:
         plt.rcParams.update({"font.size": fontsize})
-        fig = plt.figure()
-        ax = fig.subplots(1)
-        if showgrid:
-            ax.grid(True)
         if title is None:
             if kind_of_statistics == "ACF":
                 title = "Autocorrelation"
             if kind_of_statistics == "PACF":
                 title = "Partial Autocorrelation"
-        if title is not None and title != "":
-            fig.suptitle(title, fontsize=26)
+        fig, axs = fig_with_vertical_subplots(
+            n_axes=1,
+            axs_heights_ratios=axs_heights_ratios,
+            ax_height=ax_height,
+            xmargin=xmargin,
+            width=width,
+            height=height,
+            fontsize=fontsize,
+            title_fontsize=title_fontsize,
+            title=title,
+            subplots_titles=[subtitle],
+            showgrid=showgrid,
+        )
+        ax = axs[0]
     if ax is None:
         ax = fig.get_axes()[0]
+    if subtitle is not None:
+        ax.set_title(subtitle)
 
     if xs is None:
         xs = np.arange(not zero, len(values), dtype=float)
@@ -120,9 +140,4 @@ def pyplot_stats(
             alpha=conf_alpha,
             color=color,
         )
-
-    if fig is not None:
-        dpi = fig.get_dpi()
-        c = 1
-        fig.set_size_inches((int(width / dpi * c), int(height / dpi * c)))
     return fig
