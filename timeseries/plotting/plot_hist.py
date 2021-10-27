@@ -5,6 +5,10 @@ import plotly.graph_objects as go
 from matplotlib import colors as mcolors
 from plotly.subplots import make_subplots
 
+from timeseries.plotting.fig_with_vertical_subplots import (
+    fig_with_vertical_subplots
+)
+
 
 def plot_hist(values, **kwargs):
     if "fig" in kwargs and kwargs["fig"] is not None:
@@ -27,37 +31,56 @@ def pyplot_hist(
         values,
         bins=100,
         alpha=0.5,
+        label=None,
         name=None,
         fig=None,
+        ax=None,
         title=None,
-        fontsize=14,
-        width=1030,
-        height=700,
+        subtitle=None,
+        fontsize=13.5,
+        title_fontsize=26,
+        axs_heights_ratios=None,
+        ax_height=None,
+        xmargin=None,
+        width=None,
+        height=None,
+        showgrid=False,
         **kwargs):
     plt.ioff()
-    plt.rcParams.update({"font.size": fontsize})
-    if fig is None:
-        fig = plt.figure()
-        axs = [fig.subplots(1)]
-        if title is not None:
-            fig.suptitle(title, fontsize=26)
-    else:
-        axs = fig.get_axes()
-    axs[0].hist(values, bins=bins, alpha=alpha, label=name, **kwargs)
-    if name is not None:
-        axs[0].legend()
-    dpi = fig.get_dpi()
-    c = 1
-    fig.set_size_inches((int(width / dpi * c), int(height / dpi * c)))
+    if fig is None and ax is None:
+        plt.rcParams.update({"font.size": fontsize})
+        fig, axs = fig_with_vertical_subplots(
+            n_axes=1,
+            axs_heights_ratios=axs_heights_ratios,
+            ax_height=ax_height,
+            xmargin=xmargin,
+            width=width,
+            height=height,
+            fontsize=fontsize,
+            title_fontsize=title_fontsize,
+            title=title,
+            subplots_titles=[subtitle],
+            showgrid=showgrid,
+        )
+        ax = axs[0]
+    if ax is None:
+        ax = fig.get_axes()[0]
+    if subtitle is not None:
+        ax.set_title(subtitle)
+    if label is None:
+        label = name
+    ax.hist(values, bins=bins, alpha=alpha, label=label, **kwargs)
+    if label is not None:
+        ax.legend()
     return fig
 
 
-def plotly_hist(values, title=None, name=None, fig=None, width=None,
-                height=None, fontsize=14, color=None,
+def plotly_hist(values, title=None, name=None, label=None, fig=None,
+                width=None, height=None, fontsize=14, color=None,
                 go_kwargs={}, trace_kwargs={}, layout_kwargs={}, **kwargs):
     if type(values) is pd.Series:
         if name is None:
-            name = values.name
+            name = label if label is not None else values.name
         values = values.values
     if fig is None:
         fig = make_subplots(rows=1, cols=1)

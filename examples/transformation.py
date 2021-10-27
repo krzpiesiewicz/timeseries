@@ -30,7 +30,7 @@ def main():
     print(f"Differences – skewness: {trans_ts.skew()}")
 
     trans_ihs = IHSTransformer(ts, interval=train_intv, verbose=True,
-                           save_loglikelihood_deriv=True)
+                               save_loglikelihood_deriv=True)
     trans_ihs_ts = trans_ihs.transform(ts)
     print(f"Differences of IHS – skewness: {trans_ihs_ts.skew()}")
     fig1 = plot_ts(whole_intv.view(trans_ts),
@@ -41,17 +41,24 @@ def main():
 
     trans_diff_after_ihs = IHSTransformer(
         ts, interval=train_intv, difference_first=False,
-                                          verbose=True,
-                               save_loglikelihood_deriv=True
+        verbose=True,
+        save_loglikelihood_deriv=True
     )
     trans_diff_after_ihs_ts = trans_diff_after_ihs.transform(ts)
     print(f"IHS for differences – skewness:"
           f" {trans_diff_after_ihs_ts.skew()}")
     fig1 = plot_ts(whole_intv.view(trans_ts),
                    title="GBP/USD Daily – Differences of IHS Transformed")
-    plot_ts(train_intv.view(trans_diff_after_ihs_ts), color="tab:red", name="Train",
+    plot_ts(train_intv.view(trans_diff_after_ihs_ts), color="tab:red",
+            name="Train",
             fig=fig1)
     fig1.show()
+
+    figh = plot_hist(whole_intv.view(trans_ts),
+                     label="differenced and normalized")
+    plot_hist(whole_intv.view(trans_ihs_ts), fig=figh,
+              label="differenced with IHS and normalized")
+    figh.show()
 
     # figh = plot_hist(whole_intv.view(trans_ts), bins=50,
     #         title="GBP/USD Daily – Histogram of Transformed",
@@ -61,12 +68,12 @@ def main():
     # figh.show()
 
     detrans_ts = trans.detransform(train_intv.view(trans_ts),
-                                       train_intv.prev_view())
-    detrans_ihs_ts = trans_ihs.detransform(train_intv.view(trans_ihs_ts),
                                    train_intv.prev_view())
+    detrans_ihs_ts = trans_ihs.detransform(train_intv.view(trans_ihs_ts),
+                                           train_intv.prev_view())
     detrans_diff_after_ihs_ts = trans_diff_after_ihs.detransform(
         train_intv.view(trans_diff_after_ihs_ts),
-                                       train_intv.prev_view())
+        train_intv.prev_view())
 
     fig2 = plot_ts(whole_intv.view(), title="GBP/USD Daily")
     plot_ts(detrans_ts, color="tab:orange", name="Detransformed", fig=fig2)
@@ -74,7 +81,7 @@ def main():
             fig=fig2)
     plot_ts(detrans_diff_after_ihs_ts, color="tab:red",
             name="Detransformed "
-                                              "Differenced After IHS",
+                 "Differenced After IHS",
             fig=fig2)
     fig2.show()
 
@@ -90,7 +97,8 @@ def main():
     ts = covid_data[covid_data.location == loc]["new_cases"]
     ts = ts[~ts.isnull()]
 
-    plot_ts(ts, title=f"Covid-19 {loc}", engine="plotly", color="tab:blue").show()
+    plot_ts(ts, title=f"Covid-19 {loc}", engine="plotly",
+            color="tab:blue").show()
 
     train_intv = Interval(ts, begin=datetime(2020, 8, 1),
                           end=datetime(2021, 3, 1))
@@ -120,13 +128,14 @@ def main():
                      name="differenced only",
                      engine="plotly", color="tab:blue")
     plot_hist(whole_intv.view(trans_ihs_ts), fig=figh,
-              name="differenced with IHS", color="tab:orange")
+              label="differenced with IHS", color="tab:orange")
     figh.show()
 
     detrans_ts = trans_ihs.detransform(train_intv.view(trans_ihs_ts),
-                                   train_intv.prev_view())
+                                       train_intv.prev_view())
 
-    fig2 = plot_ts(ts, title=f"Covid-19 {loc}", engine="plotly", color="tab:blue")
+    fig2 = plot_ts(ts, title=f"Covid-19 {loc}", engine="plotly",
+                   color="tab:blue")
     plot_ts(train_intv.view(ts), color="yellow", fig=fig2)
     plot_ts(detrans_ts, color="tab:red", name="Detransformed IHS Train",
             fig=fig2)
