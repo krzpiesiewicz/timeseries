@@ -54,7 +54,7 @@ class IHSTransformer(Transformer):
             return x
 
         ts, interval = self.__get_ts_and_interval__(ts, interval)
-        if ts.isnull().sum() > 0:
+        if np.any(ts.isnull()):
             raise Exception("Series has missing value")
 
         if not self.ihs_after_diff:
@@ -83,7 +83,7 @@ class IHSTransformer(Transformer):
         x = x - self.mean
         if self.std is None:
             self.std = np.sqrt(np.var(x))
-            if self.std == 0:
+            if int(self.std) == 0:
                 self.std = 1
         x /= self.std
         if type(ts) is pd.Series:
@@ -146,7 +146,7 @@ def calc_mle_of_lmb(x, get_loglikelihood_deriv=False):
     for i, lmb in enumerate(lmbs):
         try:
             d = derivative_of_concentrated_loglikelihood(x, lmb)
-            if not np.isnan(d):
+            if not np.any(np.isnan(d)):
                 used_lmbs.append(lmb)
                 derivs.append(d)
         except:
@@ -175,7 +175,7 @@ def calc_mle_of_lmb(x, get_loglikelihood_deriv=False):
         best_lmb = None
 
     if get_loglikelihood_deriv:
-        derivs_table = pd.Series(derivs,
+        derivs_table = pd.Series(derivs.reshape(derivs.shape[0]),
                                  index=pd.Index(np.log10(used_lmbs),
                                                 name="log10(lambda)"),
                                  name="derivative of log-likelihood(lambda | x) with respect to lambda"
@@ -186,14 +186,14 @@ def calc_mle_of_lmb(x, get_loglikelihood_deriv=False):
 
 
 def bisection(f, a, b, tol):
-    if np.sign(f(a)) == np.sign(f(b)):
+    if int(np.sign(f(a))) == int(np.sign(f(b))):
         raise Exception("the scalars a and b do not bound a root")
     m = (a + b) / 2
-    if np.abs(f(m)) < tol:
+    if float(np.abs(f(m))) < tol:
         return float(m)
-    elif np.sign(f(a)) == np.sign(f(m)):
+    elif int(np.sign(f(a))) == int(np.sign(f(m))):
         return bisection(f, m, b, tol)
-    elif np.sign(f(b)) == np.sign(f(m)):
+    elif int(np.sign(f(b))) == int(np.sign(f(m))):
         return bisection(f, a, m, tol)
 
 
