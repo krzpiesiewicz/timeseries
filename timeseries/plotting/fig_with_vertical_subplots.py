@@ -14,7 +14,8 @@ def fig_with_vertical_subplots(
         title_fontsize=26,
         title=True,
         subplots_titles=False,
-        showgrid=False,
+        showgrid=None,
+        grid_kwargs=dict()
 ):
     plt.rcParams.update({"font.size": fontsize})
     gs_kw = {"height_ratios": axs_heights_ratios}
@@ -23,7 +24,9 @@ def fig_with_vertical_subplots(
     if n_axes == 1:
         axs = [axs]
     for ax in axs:
-        ax.grid(showgrid)
+        if showgrid is not None:
+            grid_kwargs["b"] = showgrid
+        ax.grid(**grid_kwargs)
         if xmargin is None:
             xmargin = 0
         ax.set_xmargin(xmargin)
