@@ -3,7 +3,7 @@ from datetime import datetime
 import pandas as pd
 
 from timeseries import Interval
-from timeseries.analysis import acf, plot_acf, plot_pacf, plot_stats
+from timeseries.analysis import acf, plot_acf, plot_pacf, plot_stats, pacf
 
 
 def main():
@@ -29,12 +29,17 @@ def main():
                showgrid=True).show()
     plot_acf(ts, zero=False, label="whole").show()
 
-    fig = plot_pacf(ts, alpha=0.05)
+    fig = plot_pacf(ts, alpha=0.05, zero=False)
     plot_pacf(train_intv.view(ts), alpha=0.05, zero=False,
               label="train", fig=fig)
     plot_pacf(ts, alpha=0.05, zero=False,
               cross_validated=True, nblocks=7, blocks_group=5,
               label="cross validated whole", fig=fig).show()
+
+    print(f"pacf_burg for whole ts: {pacf(ts, method='burg')}")
+
+    plot_pacf(train_intv.view(ts), zero=True, alpha=0.1,
+              label="burg method", method="burg").show()
 
 
 if __name__ == "__main__":
