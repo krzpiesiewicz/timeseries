@@ -32,8 +32,10 @@ def plot_with_pyplot():
         color="tab:orange",
         name="duzy",
     )
-    plot_ts(ts3, fig=fig, axs=[0], color="tab:green")
-    plot_ts(ts4, fig=fig, axs=[1, 2], color="tab:red")
+    plot_ts(ts3, fig=fig, axs=[0], subtitle="I set this subtitle (log)",
+            xtitle="index axis",
+            color="tab:green")
+    plot_ts(ts4, fig=fig, axs=[1, 2], ytitle="values axis", color="tab:red")
     fig.show()
 
 

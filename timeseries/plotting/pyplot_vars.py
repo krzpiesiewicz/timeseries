@@ -26,8 +26,8 @@ def pyplot_vars(
         height=None,
         fontsize=13.5,
         title_fontsize=26,
-        xaxis_title=False,
-        yaxis_title=False,
+        xtitle=None,
+        ytitle=None,
         ynbins=10,
         xscale="linear",
         yscale="linear",
@@ -45,18 +45,15 @@ def pyplot_vars(
         rotx=0,
         ha="center",
         title=None,
+        subtitle=None,
         **kwargs,
 ):
     plt.ioff()
     if "pandas.core." in f"{type(index)}":
-        if xaxis_title == True:
-            xaxis_title = index.name
         index = index.values
     if index_values is None:
         index_values = index
     if "pandas.core." in f"{type(index_values)}":
-        if xaxis_title == True:
-            xaxis_title = index.name
         index_values = index_values.values
     is_datetime_x = False
     if "datetime" in f"{index_values.dtype}":
@@ -101,14 +98,26 @@ def pyplot_vars(
     for ax in axs:
         if not is_datetime_x:
             ax.set_xscale(xscale)
-        if type(xaxis_title) is str:
-            ax.set_xlabel(xaxis_title)
         ax.yaxis.set_major_locator(ticker.MaxNLocator(nbins=ynbins))
         ax.set_yscale(yscale)
 
-    if yaxis_title == True:
-        for ax, var_name in zip(axs, vars_names):
-            ax.set_ylabel(var_name)
+    if subtitle is not None:
+        subtitles = subtitle if type(subtitle) is list else [subtitle] * len(axs)
+        assert len(subtitles) == len(axs)
+        for ax, subtitle in zip(axs, subtitles):
+            ax.set_title(subtitle)
+
+    if xtitle is not None:
+        xtitles = xtitle if type(xtitle) is list else [xtitle] * len(axs)
+        assert len(xtitles) == len(axs)
+        for ax, xtitle in zip(axs, xtitles):
+            ax.set_xlabel(xtitle)
+
+    if ytitle is not None:
+        ytitles = ytitle if type(ytitle) is list else [ytitle] * len(axs)
+        assert len(ytitles) == len(axs)
+        for ax, ytitle in zip(axs, ytitles):
+            ax.set_ylabel(ytitle)
 
     if calc_xticks:
 

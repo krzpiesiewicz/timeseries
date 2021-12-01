@@ -29,6 +29,7 @@ def plotly_vars(
         xaxis_title=False,
         yaxis_title=False,
         title=None,
+        subtitle=None, # unused currently
         fontsize=14,
         line_width=1.5,
 ):
