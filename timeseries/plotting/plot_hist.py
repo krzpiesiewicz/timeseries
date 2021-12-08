@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 from matplotlib import colors as mcolors
 from plotly.subplots import make_subplots
 
-from timeseries.plotting.fig_with_vertical_subplots import (
+from timeseries.plotting.pyplot_fig_with_vertical_subplots import (
     fig_with_vertical_subplots
 )
 

@@ -2,6 +2,7 @@ import pandas as pd
 from matplotlib import dates as mdates
 
 from timeseries import plot_ts
+from timeseries.plotting import ax_settings
 
 
 def main():
@@ -68,6 +69,23 @@ def main():
         engine="plotly",
         showlegend=True,
     ).show()
+
+    # COVID
+    # .csv available to download at:
+    # https://ourworldindata.org/explorers/coronavirus-data-explorer
+    covid_data = pd.read_csv("../data/covid-data.csv")
+    covid_data["date"] = pd.to_datetime(covid_data["date"], format="%Y-%m-%d")
+    covid_data.set_index("date", inplace=True)
+    covid_data.sort_index(ascending=True, inplace=True)
+
+    loc = "Argentina"
+    ts = covid_data[covid_data.location == loc]["new_cases"]
+    ts = ts[~ts.isnull()]
+    ts = ts[~(ts == 0)]
+
+    fig = plot_ts(ts, title=f"Covid-19 {loc}", color="tab:blue")
+    ax_settings(fig=fig, yscale="log")
+    fig.show()
 
 
 if __name__ == "__main__":

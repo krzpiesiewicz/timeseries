@@ -14,6 +14,8 @@ def fig_with_vertical_subplots(
         title_fontsize=26,
         title=True,
         subplots_titles=False,
+        xtitle=None,
+        ytitle=None,
         showgrid=None,
         grid_kwargs=dict()
 ):
@@ -30,6 +32,19 @@ def fig_with_vertical_subplots(
         if xmargin is None:
             xmargin = 0
         ax.set_xmargin(xmargin)
+
+    if xtitle is not None:
+        xtitles = xtitle if type(xtitle) is list else [xtitle] * len(axs)
+        assert len(xtitles) == len(axs)
+        for ax, xtitle in zip(axs, xtitles):
+            ax.set_xlabel(xtitle)
+
+    if ytitle is not None:
+        ytitles = ytitle if type(ytitle) is list else [ytitle] * len(axs)
+        assert len(ytitles) == len(axs)
+        for ax, ytitle in zip(axs, ytitles):
+            ax.set_ylabel(ytitle)
+
     fontratio = fontsize / 13.5
     subplots_titles_height = 0
     if type(subplots_titles) is bool:
