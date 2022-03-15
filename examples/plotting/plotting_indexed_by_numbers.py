@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 
 from timeseries import plot_ts
@@ -16,12 +17,12 @@ ts2 = [
     transform_time(11420, 10, 20, exp_grow(1.05), x0=0),
 ]
 
-ts3 = [transform_time(5000, 10, 200, log_grow(2), x0=0)]
+ts3 = transform_time(5000, 10, 200, log_grow(2), x0=0)
 
-ts4 = [
+ts4 = np.array([
     transform_time(1000, 100, 200, log_grow(2), x0=0),
     transform_time(1000, 100, 200, exp_grow(1.05), x0=0),
-]
+]).T
 
 
 def plot_with_pyplot():
@@ -53,11 +54,14 @@ def plot_with_plotly():
     plot_ts(ts2, fig=fig, color="orange", name="duzy")
     plot_ts(ts3, fig=fig, rows_and_cols=[(1, 1)], color="green")
     plot_ts(ts4, fig=fig, axs=[1, 2], color="red")
-    fig.show(config={"displayModeBar": False, "displaylogo": False, "staticPlot": True})
+    fig.show(config={"displayModeBar": False, "displaylogo": False,
+                     "staticPlot": True})
+
 
 def main():
     plot_with_pyplot()
     plot_with_plotly()
+
 
 if __name__ == "__main__":
     main()

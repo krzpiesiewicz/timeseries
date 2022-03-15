@@ -11,7 +11,9 @@ def plot_ts(ts, **kwargs):
         if len(ts.shape) == 1:
             seq_vars = [ts]
         else:
-            seq_vars = np.array_split(ts, ts.shape[-1], axis=len(ts.shape) - 1)
+            seq_vars = [arr.reshape(ts.shape[:-1]) for arr in
+                        np.array_split(ts, ts.shape[-1],
+                                       axis=len(ts.shape) - 1)]
     if type(ts) is list or type(ts) is tuple:
         seq_vars = ts
     if seq_vars is not None:

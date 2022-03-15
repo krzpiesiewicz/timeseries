@@ -1,5 +1,14 @@
+import numpy as np
+import pandas as pd
+
+
 class Interval:
     def __init__(self, ts, begin=None, end=None):
+        if type(ts) is np.ndarray:
+            if len(ts.shape) == 1:
+                ts = pd.Series(ts)
+            else:
+                ts = pd.DataFrame(ts)
         self.ts = ts
         if begin is not None and end is not None:
             assert begin < end

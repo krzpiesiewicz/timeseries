@@ -10,6 +10,7 @@ def __split_plot_params__(params, extra_plot_params={}):
     for param in ["label", "name", "fig", "ax", "title", "subtitle", "width",
                   "height", "ax_height", "axs_heights_ratios", "fontsize",
                   "title_fontsize", "figsize", "xmargin", "color",
+                  "linestyles", "linescolors",
                   "showgrid", "conf_alpha", "xtitle", "ytitle"]:
         if param in params:
             plot_params[param] = params[param]
@@ -26,7 +27,7 @@ def __plot_acf_pacf__(stat_fun, *args, zero=True, plot_params={}, **kwargs):
         assert len(res) <= 2
         values, conf_intvs = res
         conf_intvs_xs = np.arange(1, len(conf_intvs), dtype=float)
-        conf_intvs = conf_intvs[1:,:]
+        conf_intvs = conf_intvs[1:, :]
     else:
         values = res
     xs = np.arange(not zero, len(values))
