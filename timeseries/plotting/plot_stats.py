@@ -6,6 +6,7 @@ from timeseries.plotting.pyplot_fig_with_vertical_subplots import (
     fig_with_vertical_subplots
 )
 
+
 def plot_stats(*args, **kwargs):
     if "fig" in kwargs and kwargs["fig"] is not None:
         engine = (
@@ -32,6 +33,8 @@ def pyplot_stats(
         fill_along_axis=True,
         fill_only_positive=False,
         color=None,
+        linescolors=None,
+        linestyles="solid",
         alpha=1.0,
         conf_alpha=0.25,
         label=None,
@@ -98,8 +101,8 @@ def pyplot_stats(
         xs,
         ymin,
         ymax,
-        colors=None,
-        linestyles="solid",
+        colors=linescolors,
+        linestyles=linestyles,
         label="",
     )
 
@@ -111,8 +114,9 @@ def pyplot_stats(
     add_values_coeff = 0
     if conf_intvs is not None:
         fill_xs = conf_intvs_xs if conf_intvs_xs is not None else xs
-        top_values = conf_intvs[:,1]
-        bottom_values = np.zeros_like(conf_intvs[:,0]) if fill_only_positive else conf_intvs[:,0]
+        top_values = conf_intvs[:, 1]
+        bottom_values = np.zeros_like(
+            conf_intvs[:, 0]) if fill_only_positive else conf_intvs[:, 0]
         if fill_along_axis:
             add_values_coeff = -1
     if std is not None:
@@ -120,7 +124,7 @@ def pyplot_stats(
         bottom_values = np.zeros_like(std) if fill_only_positive else -std
         top_values = std
         if not fill_along_axis:
-            add_values_coeff  = 1
+            add_values_coeff = 1
     if top_values is not None:
         if add_values_coeff != 0:
             j = 0
