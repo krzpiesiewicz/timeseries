@@ -23,7 +23,7 @@ class Interval:
 
         if begin is not None and end is not None:
             assert begin < end
-        
+
         self.ts = ts
         self.begin = begin
         self.end = end
@@ -81,7 +81,7 @@ class Interval:
         return Interval(ts, begin, end, as_array)
 
     def prev(self, ts=None, nexts=0):
-        return self.__call__(ts=ts, end=self.begin, prevs="all")
+        return self.__call__(ts=ts, end=self.begin, prevs="all", nexts=nexts)
 
     def next(self, ts=None, prevs=0):
         return self.__call__(ts=ts, begin=self.end, prevs=prevs, nexts="all")
@@ -92,6 +92,10 @@ class Interval:
         if end is None:
             end = self.end
         return self.__index__(ts, begin, end, prevs, nexts)
+
+    def shifted_idx(self, idx, shift, ts=None):
+        index = self.__index__(ts, end=idx, nexts=shift + 1)
+        return index[-1]
 
     def view(self, ts=None, begin=None, end=None, prevs=0, nexts=0):
         if ts is None:

@@ -19,6 +19,11 @@ def main():
     intv = Interval(ts, datetime(2020, 1, 7), datetime(2020, 1, 15),
                     from_intv=whole_intv)
 
+    dt = datetime(2020, 1, 8)
+    for shift in [-3, -2, -1, 0, 1, 2, 3]:
+        print(
+            f"{dt} shifted by {shift} is {whole_intv.shifted_idx(dt, shift)}")
+
     print(f"whole_intv: {whole_intv}")
     print(f"intv: {intv}")
 
@@ -29,6 +34,11 @@ def main():
     print(f"intv.view(): {intv.view()}")
     print(f"intv.prev_view(): {intv.prev_view()}")
     print(f"intv.next_view(): {intv.next_view()}")
+
+    print(f"intv.prev_view(nexts=2): {intv.prev_view(nexts=2)}")
+    print(f"intv.prev_view(nexts=-2): {intv.prev_view(nexts=-2)}")
+    print(f"intv.next_view(prevs=2): {intv.next_view(prevs=2)}")
+    print(f"intv.next_view(prevs=-2): {intv.next_view(prevs=-2)}")
 
 
 if __name__ == "__main__":
