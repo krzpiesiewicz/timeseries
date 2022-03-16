@@ -75,9 +75,12 @@ class Interval:
         if begin is not None:
             begin = index[0]
         if end is not None:
-            end = index[-1]
-            if end == ts.index[-1]:
+            index2 = self.__index__(ts, begin, end, prevs, nexts)
+            if index[-1] == index2[-1]:
                 end = None
+            else:
+                end = index[-1]
+            
         return Interval(ts, begin, end, as_array)
 
     def prev(self, ts=None, nexts=0):
