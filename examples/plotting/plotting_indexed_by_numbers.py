@@ -31,12 +31,15 @@ def plot_with_pyplot():
         ts2,
         fig=fig,
         color="tab:orange",
+        linestyle="dashed",
         name="duzy",
     )
     plot_ts(ts3, fig=fig, axs=[0], subtitle="I set this subtitle (log)",
             xtitle="index axis",
-            color="tab:green")
-    plot_ts(ts4, fig=fig, axs=[1, 2], ytitle="values axis", color="tab:red")
+            color="tab:green",
+            linestyle="dotted")
+    plot_ts(ts4, fig=fig, axs=[1, 2], ytitle="values axis", color="tab:red",
+            linewidth=3)
     fig.show()
 
 
@@ -51,9 +54,9 @@ def plot_with_plotly():
         #     legend_pos="bottom",
         legend_pos="right",
     )
-    plot_ts(ts2, fig=fig, color="orange", name="duzy")
-    plot_ts(ts3, fig=fig, rows_and_cols=[(1, 1)], color="green")
-    plot_ts(ts4, fig=fig, axs=[1, 2], color="red")
+    plot_ts(ts2, fig=fig, color="orange", name="duzy", dash="dash")
+    plot_ts(ts3, fig=fig, rows_and_cols=[(1, 1)], color="green", dash="dot")
+    plot_ts(ts4, fig=fig, axs=[1, 2], color="red", line_width=3)
     fig.show(config={"displayModeBar": False, "displaylogo": False,
                      "staticPlot": True})
 

@@ -29,9 +29,10 @@ def plotly_vars(
         xaxis_title=False,
         yaxis_title=False,
         title=None,
-        subtitle=None, # unused currently
+        subtitle=None,  # unused currently
         fontsize=14,
         line_width=1.5,
+        dash=None,  # None, "dash", or "dot"
 ):
     def plot_single(fig, ts, row_and_col, color, legendgroup, showlegend):
         row, col = row_and_col
@@ -43,7 +44,7 @@ def plotly_vars(
             showlegend=showlegend,
             row=row,
             col=col,
-            line=dict(color=color, width=line_width),
+            line=dict(color=color, width=line_width, dash=dash),
         )
 
     nvars = len(seq_vars)
