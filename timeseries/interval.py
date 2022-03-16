@@ -3,7 +3,7 @@ import pandas as pd
 
 
 class Interval:
-    def __init__(self, ts=None, begin=None, end=None, as_array=False,
+    def __init__(self, ts=None, begin=None, end=None, as_dataframe=False,
                  from_intv=None):
         assert ts is not None or from_intv is not None
         if ts is None:
@@ -13,26 +13,21 @@ class Interval:
             ts = from_intv.view(ts)
 
         if type(ts) is np.ndarray:
-            if len(ts.shape) > 1 or as_array:
+            if len(ts.shape) > 1 or as_dataframe:
                 ts = pd.DataFrame(ts)
             else:
                 ts = pd.Series(ts)
 
-        if type(ts) is pd.Series and as_array:
+        if type(ts) is pd.Series and as_dataframe:
             ts = pd.DataFrame(ts)
 
         if begin is not None and end is not None:
             assert begin < end
-        # if from_intv is not None:
-        #     whole_ts = from_intv.view(ts)
-        #     intv = from_intv(ts, begin, end, as_array)
-        #     ts = intv.ts
-        #     begin = intv.begin
-        #     end = intv.end
+        
         self.ts = ts
         self.begin = begin
         self.end = end
-        self.as_array = as_array
+        self.as_array = as_dataframe
 
     def __str__(self):
         return f"[{self.begin}, {self.end})"
