@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+import numpy as np
+
 from timeseries import Interval
 
 
@@ -9,6 +11,8 @@ class Transformer(ABC):
             if interval is None:
                 interval = ts
             ts = interval.ts
+        if type(ts) is np.ndarray:
+            ts = Interval.__to_pandas__(ts)
         if self.d != "auto" and interval is None:
             interval = Interval(ts, begin=ts.index[self.d])
         return ts, interval

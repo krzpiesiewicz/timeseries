@@ -12,14 +12,7 @@ class Interval:
         if from_intv is not None:
             ts = from_intv.view(ts)
 
-        if type(ts) is np.ndarray:
-            if len(ts.shape) > 1 or as_dataframe:
-                ts = pd.DataFrame(ts)
-            else:
-                ts = pd.Series(ts)
-
-        if type(ts) is pd.Series and as_dataframe:
-            ts = pd.DataFrame(ts)
+        ts = Interval.__to_pandas__(ts, as_dataframe)
 
         if begin is not None and end is not None:
             assert begin < end
@@ -32,9 +25,21 @@ class Interval:
     def __str__(self):
         return f"[{self.begin}, {self.end})"
 
+    def __to_pandas__(ts, as_dataframe=False):
+        if type(ts) is np.ndarray:
+            if len(ts.shape) > 1 or as_dataframe:
+                ts = pd.DataFrame(ts)
+            else:
+                ts = pd.Series(ts)
+        if type(ts) is pd.Series and as_dataframe:
+            ts = pd.DataFrame(ts)
+        return ts
+
     def __index__(self, ts=None, begin=None, end=None, prevs=0, nexts=0):
         if ts is None:
             ts = self.ts
+        else:
+            ts = Interval.__to_pandas__(ts)
         index = ts.index
         if prevs == "all":
             begin = None
@@ -103,6 +108,8 @@ class Interval:
     def view(self, ts=None, begin=None, end=None, prevs=0, nexts=0):
         if ts is None:
             ts = self.ts
+        else:
+            ts = Interval.__to_pandas__(ts)
         index = self.index(ts, begin, end, prevs, nexts)
         ts = ts.loc[index]
         return ts
