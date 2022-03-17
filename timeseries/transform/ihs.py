@@ -53,6 +53,8 @@ class IHSTransformer(Transformer):
                 x = np.arcsinh(x * self.lmb) / self.lmb
             return x
 
+        original_ts_type = type(ts)
+
         ts, interval = self.__get_ts_and_interval__(ts, interval)
         if np.any(ts.isnull()):
             raise Exception("Series has missing value")
@@ -86,9 +88,16 @@ class IHSTransformer(Transformer):
             if int(self.std) == 0:
                 self.std = 1
         x /= self.std
-        if type(ts) is pd.Series:
+
+        if original_ts_type is np.ndarray:
+            x = np.array(x)
+        else:
             index = ts.index[self.d:]
-            x = pd.Series(x, index=index)
+            if original_ts_type is pd.Series:
+                x = pd.Series(x, index=index, name=ts.name)
+            if original_ts_type is pd.DataFrame:
+                x = pd.DataFrame(x, index=index)
+                x.columns = ts.columns
         return x
 
     def detransform(self, diffs_ts, prev_original_values, index=None):
