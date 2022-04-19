@@ -36,7 +36,7 @@ def plot_ts(ts, **kwargs):
             "vars_names", [series.name for series in seq_vars]
         )
 
-    if "fig" in kwargs:
+    if "fig" in kwargs and kwargs["fig"] is not None:
         engine = (
             "pyplot" if "matplotlib" in f"{type(kwargs['fig'])}" else "plotly"
         )
