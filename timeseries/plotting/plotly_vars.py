@@ -11,6 +11,7 @@ def plotly_vars(
         seq_vars,
         index,
         color,
+        alpha=1.0,
         name="",
         vars_names=[],
         showlegend=None,
@@ -44,6 +45,7 @@ def plotly_vars(
             showlegend=showlegend,
             row=row,
             col=col,
+            opacity=alpha,
             line=dict(color=color, width=line_width, dash=dash),
         )
 
