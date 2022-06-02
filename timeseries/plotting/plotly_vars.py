@@ -14,8 +14,11 @@ def plotly_vars(
         alpha=1.0,
         name="",
         vars_names=[],
+        hide_label=False,
         showlegend=None,
         legend_pos="top",
+        hovermode="x unified",
+        scatter_kwargs={},
         fig=None,
         nrows=None,
         ncols=None,
@@ -47,7 +50,13 @@ def plotly_vars(
             col=col,
             opacity=alpha,
             line=dict(color=color, width=line_width, dash=dash),
+            **scatter_kwargs
         )
+        if hide_label:
+            for trace in fig["data"]:
+                if trace["name"] == name:
+                    trace["showlegend"] = False
+                    break
 
     nvars = len(seq_vars)
 
@@ -135,7 +144,7 @@ def plotly_vars(
             width=width,
             height=height,
             font_size=fontsize,
-            hovermode="x unified",
+            hovermode=hovermode,
             title=title,
             title_x=0.5,
             title_y=1 - 0.1 * title_height / height,
