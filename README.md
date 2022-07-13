@@ -17,7 +17,7 @@ Inteval(ts=None, begin=None, end=None, as_dataframe=False, from_intv=None)
 
 The class `timeseries.transform.IHSTransformer` is a model that fits to standardize a time series on a given interval. It uses the S-shaped single parameter Inverse Hyperbolic Sine transformation. The aim of using the IHS transformation is to alter the data distribution so that it is less skewed and less heavy-tailed, and the ranges of values are narrowed. The parameter is estimated to obtain the Gaussian distribution by using the concentrated log-likelihood.
 
-<img src="https://user-images.githubusercontent.com/36455846/178771837-71feb689-7883-49aa-9dc3-f3ae03407fab.jpg" width="60%">
+<img src="https://user-images.githubusercontent.com/36455846/178771837-71feb689-7883-49aa-9dc3-f3ae03407fab.jpg" width="70%">
 
 See: *Terence C Mills. Applied time series analysis: A practical guide to modeling and forecasting. Academic press, 2019, pp. 16–18*.
 
