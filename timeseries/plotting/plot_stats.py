@@ -113,16 +113,16 @@ def pyplot_stats(
     bottom_values = None
     add_values_coeff = 0
     if conf_intvs is not None:
-        fill_xs = conf_intvs_xs if conf_intvs_xs is not None else xs
-        top_values = conf_intvs[:, 1]
+        fill_xs = conf_intvs_xs.copy() if conf_intvs_xs is not None else xs.copy()
+        top_values = conf_intvs[:, 1].copy()
         bottom_values = np.zeros_like(
-            conf_intvs[:, 0]) if fill_only_positive else conf_intvs[:, 0]
+            conf_intvs[:, 0]) if fill_only_positive else conf_intvs[:, 0].copy()
         if fill_along_axis:
             add_values_coeff = -1
     if std is not None:
-        fill_xs = std_xs if std_xs is not None else xs
-        bottom_values = np.zeros_like(std) if fill_only_positive else -std
-        top_values = std
+        fill_xs = std_xs.copy() if std_xs is not None else xs.copy()
+        bottom_values = np.zeros_like(std) if fill_only_positive else -std.copy()
+        top_values = std.copy()
         if not fill_along_axis:
             add_values_coeff = 1
     if top_values is not None:
