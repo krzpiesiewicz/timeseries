@@ -1,6 +1,9 @@
 # not my data
 examples/data/
+
+# temporary for docs
 examples/*.html
+plots_and_graphics/
 
 # pycharm
 .idea/
