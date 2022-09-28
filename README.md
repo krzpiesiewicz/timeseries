@@ -3,6 +3,10 @@
 
 See a sample [notebook](https://students.mimuw.edu.pl/~kp385996/timeseries/example.html) for basic usage.
 
+More examples which employ `timeseries` package:
+- [An autoregressive analysis of EEG signals](https://students.mimuw.edu.pl/~kp385996/ba/ba-thesis/ar/html/eeg_ihs_ar_psd_experiments_stats-eeg_features_raw.html),
+- [Wind speed prediction – A comparison of models](https://students.mimuw.edu.pl/~kp385996/wind-speed/).
+
 ## Interval representation
 
 The key concept of this package is the class `timeseries.Interval`, which carries more information than simple `pandas.Index`. It works with integer, date, time indices, and others which have defined arithmetic operations and linear orders. Furthermore, it gives simple operations that help one manipulate time series and intervals, e.g., you may restrict the view of any time series, you may get earlier / further measurements, or extend the interval in custom way.
@@ -108,3 +112,6 @@ There are the following functions from `timeseries`: `analysis.acf`, `analysis.p
 ## Forecasting
 
 The available forecasting models are: SARIMA and seasonal median of medians. The package also contains a framework for hyperparameter search and cross-validated performance measurement, with saving the results.
+
+## Pytorch extension
+A pytorch extension to `timeseries` package: [`timeseries-pytorch`](https://github.com/krzpiesiewicz/timeseries-pytorch) provides facades for pytorch models and datasets.
