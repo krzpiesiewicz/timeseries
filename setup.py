@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="timeseries",
-    version="0.0.1",
+    version="0.0.2",
     author="Krzysztof Piesiewicz",
     author_email="krz.piesiewicz@gmail.com",
     description="A package for generation, transformation and "
@@ -21,7 +21,7 @@ setuptools.setup(
     ],
     install_requires=[
         "pandas>=1.0.5",
-        "numpy~=1.19.0",
+        "numpy>=1.19.0",
         "scikit-learn>=0.22.0",
         "matplotlib>=3.2.2",
         "IPython>=5.5.0",
