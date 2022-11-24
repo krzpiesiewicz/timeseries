@@ -2,9 +2,11 @@ import numpy as np
 
 from timeseries.analysis import acf, pacf
 from timeseries.plotting import plot_stats
+from timeseries.utils.init_structs import init_if_none
 
 
-def __split_plot_params__(params, extra_plot_params={}):
+def __split_plot_params__(params, extra_plot_params=None):
+    extra_plot_params = init_if_none(extra_plot_params, dict)
     plain_params = params.copy()
     plot_params = extra_plot_params.copy()
     for param in ["label", "name", "fig", "ax", "title", "subtitle", "width",
@@ -18,7 +20,8 @@ def __split_plot_params__(params, extra_plot_params={}):
     return plain_params, plot_params
 
 
-def __plot_acf_pacf__(stat_fun, *args, zero=True, plot_params={}, **kwargs):
+def __plot_acf_pacf__(stat_fun, *args, zero=True, plot_params=None, **kwargs):
+    plot_params = init_if_none(plot_params, dict)
     kwargs, plot_kwargs = __split_plot_params__(kwargs, plot_params)
     res = stat_fun(*args, **kwargs)
     conf_intvs = None
@@ -36,14 +39,16 @@ def __plot_acf_pacf__(stat_fun, *args, zero=True, plot_params={}, **kwargs):
                       **plot_kwargs)
 
 
-def plot_acf(*args, plot_params={}, **kwargs):
+def plot_acf(*args, plot_params=None, **kwargs):
+    plot_params = init_if_none(plot_params, dict)
     if "title" not in plot_params and "title" not in kwargs:
         plot_params["title"] = "Autocorrelation"
     return __plot_acf_pacf__(acf, *args, plot_params=plot_params,
                              **kwargs)
 
 
-def plot_pacf(*args, plot_params={}, **kwargs):
+def plot_pacf(*args, plot_params=None, **kwargs):
+    plot_params = init_if_none(plot_params, dict)
     if "title" not in plot_params and "title" not in kwargs:
         plot_params["title"] = "Partial Autocorrelation"
     return __plot_acf_pacf__(pacf, *args, plot_params=plot_params,

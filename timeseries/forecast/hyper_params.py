@@ -6,6 +6,8 @@ from timeseries.forecast.utils.timing import timedelta_str
 from timeseries.forecast.utils.float_precision import value_precision_str
 from timeseries.forecast.average_scoring import average_scores
 
+from timeseries.utils.init_structs import init_if_none
+
 
 def sorted_scores(scores):
     return sorted(scores, key=lambda t: t[0], reverse=False)
@@ -20,13 +22,16 @@ def grid_search_hyper_params(
         best=10,
         max_fails=20,
         scores=None,
-        model_params={},
+        model_params=None,
         fit_fun=None,
-        fit_params={},
+        fit_params=None,
         score_fun=None,
-        score_params={},
+        score_params=None,
         max_line_len=111
 ):
+    model_params = init_if_none(model_params, dict)
+    fit_params = init_if_none(fit_params, dict)
+    score_params = init_if_none(score_params, dict)
     assert best is None or type(best) is int
     
     def default_fit_fun(model, ts, train_intv, **fit_params):

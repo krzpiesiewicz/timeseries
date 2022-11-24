@@ -8,6 +8,8 @@ from timeseries.forecast.scorings import get_scoring
 from timeseries.forecast.utils.timing import timedelta_str
 from timeseries.forecast.utils.float_precision import value_precision_str
 
+from timeseries.utils.init_structs import init_if_none
+
 
 def average_scores(
         model,
@@ -25,8 +27,9 @@ def average_scores(
         precision=3,
         precision_big=1,
         mute=False,
-        update_params={}
+        update_params=None
 ):
+    update_params = init_if_none(update_params, dict)
     if trans is not None:
         assert original_ts is not None
     if score_ts is None:
@@ -98,7 +101,7 @@ def average_scores(
         return res
     else:
         return mean_scores
-    
+
 
 # def average_scores2(
 #         model,

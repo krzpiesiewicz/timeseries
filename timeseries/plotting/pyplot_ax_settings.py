@@ -3,6 +3,8 @@ from matplotlib import dates as mdates
 from matplotlib import pyplot as plt
 from matplotlib import ticker
 
+from timeseries.utils.init_structs import init_if_none
+
 ax_params = [
     "axs",
     "fig",
@@ -46,7 +48,7 @@ def ax_settings(
         minor_xticks_loc=None,
         calc_grid=False,
         showgrid=None,
-        grid_kwargs={},
+        grid_kwargs=None,
         date_fmt=None,
         datemin=None,
         datemax=None,
@@ -55,6 +57,7 @@ def ax_settings(
         ha=None,
         subtitle=None,
 ):
+    grid_kwargs = init_if_none(grid_kwargs, dict)
     if axs is None:
         assert fig is not None
         axs = fig.get_axes()

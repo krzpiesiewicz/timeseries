@@ -6,6 +6,8 @@ import numpy as np
 from matplotlib import colors as mcolors
 from plotly.subplots import make_subplots
 
+from timeseries.utils.init_structs import init_if_none
+
 
 def plotly_vars(
         seq_vars,
@@ -13,12 +15,12 @@ def plotly_vars(
         color,
         alpha=1.0,
         name="",
-        vars_names=[],
+        vars_names=None,
         hide_label=False,
         showlegend=None,
         legend_pos="top",
         hovermode="x unified",
-        scatter_kwargs={},
+        scatter_kwargs=None,
         fig=None,
         nrows=None,
         ncols=None,
@@ -58,6 +60,8 @@ def plotly_vars(
                     trace["showlegend"] = False
                     break
 
+    vars_names = init_if_none(vars_names, list)
+    scatter_kwargs = init_if_none(scatter_kwargs, dict)
     nvars = len(seq_vars)
 
     if axs is not None:

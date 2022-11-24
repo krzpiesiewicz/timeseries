@@ -4,6 +4,8 @@ from timeseries.plotting.pyplot_ax_settings import ax_params, ax_settings
 from timeseries.plotting.pyplot_fig_with_vertical_subplots import (
     fig_with_vertical_subplots
 )
+from timeseries.utils.init_structs import init_if_none
+
 
 def pyplot_vars(
         seq_vars,
@@ -11,7 +13,7 @@ def pyplot_vars(
         index,
         index_values=None,
         name=None,
-        vars_names=[],
+        vars_names=None,
         fig=None,
         axs=None,
         axs_heights_ratios=None,
@@ -22,10 +24,12 @@ def pyplot_vars(
         fontsize=13.5,
         title_fontsize=26,
         showgrid=True,
-        grid_kwargs=dict(),
+        grid_kwargs=None,
         title=None,
         **kwargs,
 ):
+    vars_names = init_if_none(vars_names, list)
+    grid_kwargs = init_if_none(grid_kwargs, dict)
     plt.ioff()
     if "pandas.core." in f"{type(index)}":
         index = index.values

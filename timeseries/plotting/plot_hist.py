@@ -8,6 +8,7 @@ from plotly.subplots import make_subplots
 from timeseries.plotting.pyplot_fig_with_vertical_subplots import (
     fig_with_vertical_subplots
 )
+from timeseries.utils.init_structs import init_if_none
 
 
 def plot_hist(values, **kwargs):
@@ -77,7 +78,10 @@ def pyplot_hist(
 
 def plotly_hist(values, title=None, name=None, label=None, fig=None,
                 width=None, height=None, fontsize=14, color=None,
-                go_kwargs={}, trace_kwargs={}, layout_kwargs={}, **kwargs):
+                go_kwargs=None, trace_kwargs=None, layout_kwargs=None, **kwargs):
+    go_kwargs = init_if_none(go_kwargs, dict)
+    trace_kwargs = init_if_none(trace_kwargs, dict)
+    layout_kwargs = init_if_none(layout_kwargs, dict)
     if type(values) is pd.Series:
         if name is None:
             name = label if label is not None else values.name

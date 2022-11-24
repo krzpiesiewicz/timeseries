@@ -1,5 +1,7 @@
 from matplotlib import pyplot as plt
 
+from timeseries.utils.init_structs import init_if_none
+
 DEBUG = False
 
 
@@ -17,8 +19,9 @@ def fig_with_vertical_subplots(
         xtitle=None,
         ytitle=None,
         showgrid=None,
-        grid_kwargs=dict()
+        grid_kwargs=None
 ):
+    grid_kwargs = init_if_none(grid_kwargs, dict)
     plt.rcParams.update({"font.size": fontsize})
     gs_kw = {"height_ratios": axs_heights_ratios}
     fig = plt.figure(constrained_layout=True)
