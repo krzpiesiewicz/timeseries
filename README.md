@@ -3,6 +3,10 @@
 
 See a sample [notebook](https://students.mimuw.edu.pl/~kp385996/timeseries/example.html) for basic usage.
 
+More examples which employ `timeseries` package:
+- [An autoregressive analysis of EEG signals](https://students.mimuw.edu.pl/~kp385996/ba/ba-thesis/ar/html/eeg_ihs_ar_psd_experiments_stats-eeg_features_raw.html),
+- [Wind speed prediction – A comparison of models](https://students.mimuw.edu.pl/~kp385996/wind-speed/).
+
 ## Interval representation
 
 The key concept of this package is the class `timeseries.Interval`, which carries more information than simple `pandas.Index`. It works with integer, date, time indices, and others which have defined arithmetic operations and linear orders. Furthermore, it gives simple operations that help one manipulate time series and intervals, e.g., you may restrict the view of any time series, you may get earlier / further measurements, or extend the interval in custom way.
@@ -17,7 +21,7 @@ Inteval(ts=None, begin=None, end=None, as_dataframe=False, from_intv=None)
 
 The class `timeseries.transform.IHSTransformer` is a model that fits to standardize a time series on a given interval. It uses the S-shaped single parameter Inverse Hyperbolic Sine transformation. The aim of using the IHS transformation is to alter the data distribution so that it is less skewed and less heavy-tailed, and the ranges of values are narrowed. The parameter is estimated to obtain the Gaussian distribution by using the concentrated log-likelihood.
 
-<img src="https://user-images.githubusercontent.com/36455846/161094820-b3dacafa-8fd9-4a12-a597-ae421537aae3.jpg" width="60%">
+<img src="https://user-images.githubusercontent.com/36455846/178771837-71feb689-7883-49aa-9dc3-f3ae03407fab.jpg" width="70%">
 
 See: *Terence C Mills. Applied time series analysis: A practical guide to modeling and forecasting. Academic press, 2019, pp. 16–18*.
 
@@ -108,3 +112,6 @@ There are the following functions from `timeseries`: `analysis.acf`, `analysis.p
 ## Forecasting
 
 The available forecasting models are: SARIMA and seasonal median of medians. The package also contains a framework for hyperparameter search and cross-validated performance measurement, with saving the results.
+
+## Pytorch extension
+A pytorch extension to `timeseries` package: [`timeseries-pytorch`](https://github.com/krzpiesiewicz/timeseries-pytorch) provides facades for pytorch models and datasets.
