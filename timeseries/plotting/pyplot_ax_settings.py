@@ -183,5 +183,5 @@ def ax_settings(
         if not_nones(yscale):
             ax.set_yscale(yscale)
         if showgrid is not None:
-            grid_kwargs["b"] = showgrid
+            grid_kwargs["visible"] = showgrid
         ax.grid(**grid_kwargs)

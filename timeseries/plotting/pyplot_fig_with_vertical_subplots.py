@@ -30,7 +30,7 @@ def fig_with_vertical_subplots(
         axs = [axs]
     for ax in axs:
         if showgrid is not None:
-            grid_kwargs["b"] = showgrid
+            grid_kwargs["visible"] = showgrid
         ax.grid(**grid_kwargs)
         if xmargin is None:
             xmargin = 0
